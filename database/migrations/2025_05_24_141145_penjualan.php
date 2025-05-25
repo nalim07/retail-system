@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('penjualan', function (Blueprint $table) {
             $table->id();
             $table->dateTime('tgl_penjualan');
+            $table->foreignId('id_pelanggan')->constrained('pelanggan')->onDelete('cascade');
             $table->timestamps();
         });
     }
