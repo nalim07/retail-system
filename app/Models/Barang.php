@@ -17,10 +17,11 @@ class Barang extends Model
         'nama_barang',
         'jenis_barang',
         'stok',
+        'harga',
         'id_kategori'
     ];
 
-    
+
     // Relasi ke KategoriBarang
     public function kategori(): BelongsTo
     {
