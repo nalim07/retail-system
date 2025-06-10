@@ -28,6 +28,12 @@ class Penjualan extends Model
         return $this->belongsTo(Pelanggan::class, 'id_pelanggan');
     }
 
+    public function getJumlahTotalAttribute()
+    {
+        return $this->penjualanDetails->sum('jumlah_penjualan');
+    }
+
+
     // Relasi ke Detail Penjualan
     public function penjualanDetails(): HasMany
     {

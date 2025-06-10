@@ -11,6 +11,8 @@ use Filament\Support\RawJs;
 use App\Models\KategoriBarang;
 use Filament\Resources\Resource;
 use Filament\Forms\Components\Mask;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TextInput;
 use Illuminate\Database\Eloquent\Builder;
 use App\Filament\Resources\BarangResource\Pages;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
@@ -30,16 +32,16 @@ class BarangResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('nama_barang')
+                TextInput::make('nama_barang')
                     ->required()
                     ->maxLength(255),
-                Forms\Components\TextInput::make('jenis_barang')
+                TextInput::make('jenis_barang')
                     ->required()
                     ->maxLength(255),
-                Forms\Components\TextInput::make('stok')
+                TextInput::make('stok')
                     ->required()
                     ->numeric(),
-                Forms\Components\TextInput::make('harga')
+                TextInput::make('harga')
                     ->required()
                     ->numeric()
                     ->label('Harga (dalam Rupiah)')
@@ -53,7 +55,7 @@ class BarangResource extends Resource
                         JS))
                     ->stripCharacters(['.', ','])
                     ->placeholder('Masukkan harga barang'),
-                Forms\Components\Select::make('id_kategori')
+                Select::make('id_kategori')
                     ->label('Kategori')
                     ->required()
                     ->options(KategoriBarang::all()->pluck('nama_kategori', 'id'))

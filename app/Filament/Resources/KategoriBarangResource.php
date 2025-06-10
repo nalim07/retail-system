@@ -2,16 +2,17 @@
 
 namespace App\Filament\Resources;
 
-use App\Filament\Resources\KategoriBarangResource\Pages;
-use App\Filament\Resources\KategoriBarangResource\RelationManagers;
-use App\Models\KategoriBarang;
 use Filament\Forms;
-use Filament\Forms\Form;
-use Filament\Resources\Resource;
 use Filament\Tables;
+use Filament\Forms\Form;
 use Filament\Tables\Table;
+use App\Models\KategoriBarang;
+use Filament\Resources\Resource;
+use Filament\Forms\Components\TextInput;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use App\Filament\Resources\KategoriBarangResource\Pages;
+use App\Filament\Resources\KategoriBarangResource\RelationManagers;
 
 class KategoriBarangResource extends Resource
 {
@@ -22,12 +23,12 @@ class KategoriBarangResource extends Resource
     protected static ?string $navigationLabel = 'Kategori Barang';
     protected static ?string $navigationIcon = 'heroicon-o-tag';
     protected static ?int $navigationSort = 2;
-    
+
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('nama_kategori')
+                TextInput::make('nama_kategori')
                     ->required()
                     ->maxLength(155)
                     ->label('Nama Kategori'),

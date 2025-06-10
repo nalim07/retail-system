@@ -28,19 +28,19 @@ class PelangganResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('nama_pelanggan')
+                TextInput::make('nama_pelanggan')
                     ->required()
                     ->maxLength(25)
                     ->label('Nama Pelanggan')
                     ->inputMode('text')
                     ->placeholder('Masukkan nama lengkap'),
-                Forms\Components\TextInput::make('alamat')
+                TextInput::make('alamat')
                     ->required()
                     ->maxLength(255)
                     ->label('Alamat')
                     ->inputMode('text')
                     ->placeholder('Masukkan alamat pelanggan'),
-                Forms\Components\TextInput::make('no_hp')
+                TextInput::make('no_hp')
                     ->required()
                     ->maxLength(15)
                     ->label('No. HP')
