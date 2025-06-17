@@ -15,7 +15,9 @@ class PembelianDetail extends Model
     protected $fillable = [
         'id_pembelian',
         'id_barang',
-        'jumlah_pembelian'
+        'jumlah_pembelian',
+        'sisa',
+        'harga_satuan'
     ];
 
     public function pembelian(): BelongsTo

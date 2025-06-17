@@ -15,6 +15,9 @@ return new class extends Migration
             $table->id();
             $table->foreignId('id_pembelian')->constrained('pembelian')->onDelete('cascade');
             $table->foreignId('id_barang')->constrained('barang');
+            $table->integer('jumlah_pembelian');
+            $table->integer('sisa')->default(0);
+            $table->unsignedBigInteger('harga_satuan');
             $table->timestamps();
         });
     }
