@@ -12,12 +12,16 @@ class CreatePembelian extends CreateRecord
 
     protected function afterCreate(): void
     {
-        foreach ($this->record->pembelianDetails as $detail) {
+        $pembelian = $this->record;
+
+        foreach ($pembelian->pembelianDetails as $detail) {
             $barang = $detail->barang;
+
+            // Tambah stok total ke table barang
             $barang->stok += $detail->jumlah_pembelian;
             $barang->save();
 
-            // Optional: set sisa untuk FIFO
+            // Set sisa awal sama dengan jumlah_pembelian
             $detail->sisa = $detail->jumlah_pembelian;
             $detail->save();
         }

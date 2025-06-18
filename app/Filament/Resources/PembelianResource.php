@@ -63,15 +63,27 @@ class PembelianResource extends Resource
                             JS))
                             ->stripCharacters(['.', ','])
                             ->placeholder('Masukkan harga satuan'),
+                        Forms\Components\TextInput::make('sisa')
+                            ->numeric()
+                            ->default(0)
+                            ->disabled()
+                            ->placeholder('Sisa stok')
+                            ->mask(RawJs::make(<<<'JS'
+                                $input => {
+                                    let number = $input.replace(/\D/g, '');
+                                    return new Intl.NumberFormat('id-ID').format(number);
+                                }
+                            JS))
+                            ->stripCharacters(['.', ',']),
                     ])
                     ->columns(2),
-                    
-                    ])->columns([
-                        'lg' => 1,
-                        'md' => 1,
-                        'sm' => 1,
-                    ]);
-                }
+
+            ])->columns([
+                'lg' => 1,
+                'md' => 1,
+                'sm' => 1,
+            ]);
+    }
 
     public static function table(Table $table): Table
     {
@@ -96,6 +108,12 @@ class PembelianResource extends Resource
                     ->prefix('Rp')
                     ->sortable()
                     ->formatStateUsing(fn($state) => number_format($state, 0, ',', '.')),
+                Tables\Columns\TextColumn::make('pembelianDetails.sisa')
+                    ->label('Sisa Stok')
+                    ->numeric()
+                    ->sortable()
+                    ->formatStateUsing(fn($state) => number_format($state, 0, ',', '.'))
+                    ->default('0'),
                 // Tables\Columns\TextColumn::make('pembelianDetails.harga_satuan')
                 //     ->label('Total Harga')
                 //     ->numeric()
