@@ -4,16 +4,20 @@ namespace App\Filament\Resources;
 
 use Filament\Forms;
 use Filament\Tables;
+use App\Models\Barang;
 use Filament\Forms\Form;
 use App\Models\Pembelian;
 use Filament\Tables\Table;
+use Illuminate\Support\Js;
 use Filament\Support\RawJs;
+use App\Models\KategoriBarang;
 use Filament\Resources\Resource;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Date;
 use Filament\Forms\Components\DatePicker;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Notification;
+use Filament\Forms\Components\Actions\Action;
 use App\Filament\Resources\PembelianResource\Pages;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Resources\PembelianResource\RelationManagers;
@@ -43,38 +47,45 @@ class PembelianResource extends Resource
                     ->schema([
                         Forms\Components\Select::make('id_barang')
                             ->label('Barang')
-                            ->options(\App\Models\Barang::pluck('nama_barang', 'id'))
+                            ->options(Barang::pluck('nama_barang', 'id'))
                             ->searchable()
-                            ->required(),
+                            ->preload()
+                            ->required()
+                            ->createOptionForm([
+                                Forms\Components\TextInput::make('nama_barang')
+                                    ->required()
+                                    ->maxLength(255),
+                                Forms\Components\TextInput::make('jenis_barang')
+                                    ->required()
+                                    ->maxLength(255),
+                                Forms\Components\TextInput::make('harga_barang')
+                                    ->numeric()
+                                    ->label('Harga (dalam Rupiah)')
+                                    ->inputMode('numeric')
+                                    ->prefix('Rp')
+                                    ->mask(RawJs::make(<<<'JS'
+                                    $input => {
+                                        let number = $input.replace(/\D/g, '');
+                                            return new Intl.NumberFormat('id-ID').format(number);
+                                        }
+                                    JS))
+                                    ->stripCharacters(['.', ','])
+                                    ->required(),
+                                Forms\Components\Select::make('id_kategori')
+                                    ->label('Kategori')
+                                    ->required()
+                                    ->options(KategoriBarang::pluck('nama_kategori', 'id'))
+                                    ->searchable(),
+                            ])
+                            ->createOptionUsing(function (array $data): int {
+                                // Logika untuk menyimpan data barang baru ke database
+                                $barang = Barang::create($data);
+                                return $barang->id; // Kembalikan ID dari barang yang baru dibuat
+                            }),
                         Forms\Components\TextInput::make('jumlah_pembelian')
                             ->numeric()
                             ->minValue(1)
                             ->required(),
-                        Forms\Components\TextInput::make('harga_satuan')
-                            ->numeric()
-                            ->required()
-                            ->inputMode('numeric')
-                            ->prefix('Rp')
-                            ->mask(RawJs::make(<<<'JS'
-                                $input => {
-                                    let number = $input.replace(/\D/g, '');
-                                    return new Intl.NumberFormat('id-ID').format(number);
-                                }
-                            JS))
-                            ->stripCharacters(['.', ','])
-                            ->placeholder('Masukkan harga satuan'),
-                        Forms\Components\TextInput::make('sisa')
-                            ->numeric()
-                            ->default(0)
-                            ->disabled()
-                            ->placeholder('Sisa stok')
-                            ->mask(RawJs::make(<<<'JS'
-                                $input => {
-                                    let number = $input.replace(/\D/g, '');
-                                    return new Intl.NumberFormat('id-ID').format(number);
-                                }
-                            JS))
-                            ->stripCharacters(['.', ',']),
                     ])
                     ->columns(2),
 
@@ -102,18 +113,12 @@ class PembelianResource extends Resource
                     ->label('Jumlah Pembelian')
                     ->numeric()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('pembelianDetails.harga_satuan')
-                    ->label('Harga Satuan')
-                    ->numeric()
-                    ->prefix('Rp')
-                    ->sortable()
-                    ->formatStateUsing(fn($state) => number_format($state, 0, ',', '.')),
-                Tables\Columns\TextColumn::make('pembelianDetails.sisa')
-                    ->label('Sisa Stok')
-                    ->numeric()
-                    ->sortable()
-                    ->formatStateUsing(fn($state) => number_format($state, 0, ',', '.'))
-                    ->default('0'),
+                // Tables\Columns\TextColumn::make('pembelianDetails.harga_satuan')
+                //     ->label('Harga Satuan')
+                //     ->numeric()
+                //     ->prefix('Rp')
+                //     ->sortable()
+                //     ->formatStateUsing(fn($state) => number_format($state, 0, ',', '.')),
                 // Tables\Columns\TextColumn::make('pembelianDetails.harga_satuan')
                 //     ->label('Total Harga')
                 //     ->numeric()

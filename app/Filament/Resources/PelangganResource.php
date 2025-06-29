@@ -30,6 +30,7 @@ class PelangganResource extends Resource
             ->schema([
                 TextInput::make('nama_pelanggan')
                     ->required()
+                    ->inline(true)
                     ->maxLength(25)
                     ->label('Nama Pelanggan')
                     ->inputMode('text')

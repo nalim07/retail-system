@@ -14,9 +14,9 @@ return new class extends Migration
         Schema::create('barang', function (Blueprint $table) {
             $table->id();
             $table->string('nama_barang');
-            $table->string('jenis_barang');
-            $table->integer('stok');
-            $table->unsignedBigInteger('harga');
+            $table->string('jenis_barang')->nullable();
+            $table->integer('stok')->nullable();
+            $table->unsignedBigInteger('harga_barang')->nullable();
             $table->foreignId('id_kategori')->constrained('kategori_barang')->onDelete('cascade');
             $table->timestamps();
         });

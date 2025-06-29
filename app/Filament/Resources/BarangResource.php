@@ -39,10 +39,8 @@ class BarangResource extends Resource
                     ->required()
                     ->maxLength(255),
                 TextInput::make('stok')
-                    ->required()
                     ->numeric(),
-                TextInput::make('harga')
-                    ->required()
+                TextInput::make('harga_barang')
                     ->numeric()
                     ->label('Harga (dalam Rupiah)')
                     ->inputMode('numeric')
@@ -75,7 +73,7 @@ class BarangResource extends Resource
                 Tables\Columns\TextColumn::make('stok')
                     ->numeric()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('harga')
+                Tables\Columns\TextColumn::make('harga_barang')
                     ->numeric()
                     ->sortable()
                     ->prefix('Rp'),

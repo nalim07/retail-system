@@ -17,7 +17,7 @@ class Barang extends Model
         'nama_barang',
         'jenis_barang',
         'stok',
-        'harga',
+        'harga_barang',
         'id_kategori'
     ];
 
@@ -29,6 +29,12 @@ class Barang extends Model
     }
 
     // Relasi ke PembelianDetail
+    public function pembelianDetails(): HasMany
+{
+    return $this->hasMany(PembelianDetail::class, 'id_barang');
+}
+
+    // Relasi ke PenjualanDetail
     public function penjualanDetails(): HasMany
     {
         return $this->hasMany(PenjualanDetail::class, 'id_barang');

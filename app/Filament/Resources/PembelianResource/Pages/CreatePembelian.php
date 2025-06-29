@@ -20,10 +20,6 @@ class CreatePembelian extends CreateRecord
             // Tambah stok total ke table barang
             $barang->stok += $detail->jumlah_pembelian;
             $barang->save();
-
-            // Set sisa awal sama dengan jumlah_pembelian
-            $detail->sisa = $detail->jumlah_pembelian;
-            $detail->save();
         }
     }
 }
