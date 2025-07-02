@@ -30,9 +30,9 @@ class Barang extends Model
 
     // Relasi ke PembelianDetail
     public function pembelianDetails(): HasMany
-{
-    return $this->hasMany(PembelianDetail::class, 'id_barang');
-}
+    {
+        return $this->hasMany(PembelianDetail::class, 'id_barang');
+    }
 
     // Relasi ke PenjualanDetail
     public function penjualanDetails(): HasMany

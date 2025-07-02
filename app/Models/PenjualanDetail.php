@@ -17,6 +17,7 @@ class PenjualanDetail extends Model
         'id_penjualan',
         'id_barang',
         'jumlah_penjualan',
+        'harga_jual',
         'id_pembelian_detail'
     ];
 

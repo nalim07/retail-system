@@ -15,8 +15,9 @@ return new class extends Migration
             $table->id();
             $table->foreignId('id_penjualan')->constrained('penjualan')->onDelete('cascade');
             $table->foreignId('id_barang')->constrained('barang')->onDelete('cascade');
-            $table->integer('jumlah_penjualan');
             $table->foreignId('id_pembelian_detail')->nullable()->constrained('pembelian_detail');
+            $table->integer('jumlah_penjualan');
+            $table->unsignedBigInteger('harga_jual')->nullable();
             $table->timestamps();
         });
     }

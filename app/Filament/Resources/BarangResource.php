@@ -56,7 +56,7 @@ class BarangResource extends Resource
                 Select::make('id_kategori')
                     ->label('Kategori')
                     ->required()
-                    ->options(KategoriBarang::all()->pluck('nama_kategori', 'id'))
+                    ->relationship('kategori', 'nama_kategori')
                     ->searchable()
                     ->preload(),
             ]);
@@ -66,17 +66,19 @@ class BarangResource extends Resource
     {
         return $table
             ->columns([
+                Tables\Columns\TextColumn::make('no')
+                    ->rowIndex(),
                 Tables\Columns\TextColumn::make('nama_barang')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('jenis_barang')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('stok')
-                    ->numeric()
-                    ->sortable(),
                 Tables\Columns\TextColumn::make('harga_barang')
                     ->numeric()
                     ->sortable()
                     ->prefix('Rp'),
+                Tables\Columns\TextColumn::make('stok')
+                    ->numeric()
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('kategori.nama_kategori')
                     ->label('Kategori')
                     ->searchable()

@@ -15,7 +15,9 @@ class PembelianDetail extends Model
     protected $fillable = [
         'id_pembelian',
         'id_barang',
-        'jumlah_pembelian'
+        'jumlah_pembelian',
+        'sisa',
+        'harga_beli'
     ];
 
     public function pembelian(): BelongsTo
@@ -26,5 +28,12 @@ class PembelianDetail extends Model
     public function barang(): BelongsTo
     {
         return $this->belongsTo(Barang::class, 'id_barang');
+    }
+
+    protected static function booted()
+    {
+        static::creating(function ($detail) {
+            $detail->sisa = $detail->jumlah_pembelian;
+        });
     }
 }

@@ -17,6 +17,7 @@ use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Repeater;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Forms\Components\TextInput;
+use Filament\Notifications\Notification;
 use Filament\Forms\Components\DatePicker;
 use Illuminate\Database\Eloquent\Builder;
 use Filament\Forms\Components\DateTimePicker;
@@ -65,11 +66,30 @@ class PenjualanResource extends Resource
                             ->label('Harga Jual')
                             ->prefix('Rp')
                             ->readOnly(),
-                        Forms\Components\TextInput::make('jumlah_penjualan')
+                        TextInput::make('jumlah_penjualan')
                             ->label('Jumlah')
                             ->numeric()
-                            ->minValue(1)
-                            ->required(),
+                            ->required()
+                            ->reactive()
+                            ->afterStateUpdated(function ($state, callable $get, callable $set) {
+                                $idBarang = $get('id_barang');
+
+                                if (!$idBarang || !$state) return;
+
+                                $totalSisa = \App\Models\PembelianDetail::where('id_barang', $idBarang)
+                                    ->where('sisa', '>', 0)
+                                    ->sum('sisa');
+
+                                if ($state > $totalSisa) {
+                                    Notification::make()
+                                        ->title('Stok tidak mencukupi')
+                                        ->body("Stok barang hanya tersedia {$totalSisa}, diminta {$state}.")
+                                        ->danger()
+                                        ->send();
+
+                                    $set('jumlah_penjualan', null); // reset input jika invalid
+                                }
+                            }),
                     ])
                     ->columns(3)
                     ->columnSpanFull()
@@ -138,91 +158,5 @@ class PenjualanResource extends Resource
             'create' => Pages\CreatePenjualan::route('/create'),
             'edit' => Pages\EditPenjualan::route('/{record}/edit'),
         ];
-    }
-
-    public static function afterCreate(Form $form, $penjualan): void
-    {
-        DB::transaction(function () use ($penjualan) {
-            // Salin detail penjualan yang di-input dari form ke array sementara
-            // Ini diperlukan karena Filament mungkin sudah membuat PenjualanDetail sementara
-            $inputDetails = $penjualan->penjualanDetails->toArray();
-
-            // Hapus detail penjualan yang mungkin otomatis dibuat oleh Filament
-            // Kita akan membuat ulang detail penjualan dengan mengacu pada batch FIFO
-            $penjualan->penjualanDetails()->delete();
-
-            // Iterasi setiap barang dalam penjualan
-            foreach ($inputDetails as $detail) {
-                $idBarang = $detail['id_barang'];
-                $totalJumlah = $detail['jumlah_penjualan'];
-                $hargaJual = $detail['harga_jual'];
-
-                // Temukan barang berdasarkan ID
-                $barang = Barang::find($idBarang);
-                if (!$barang) {
-                    throw new \Exception("Barang tidak ditemukan dengan ID: {$idBarang}");
-                }
-
-                // --- VALIDASI STOK GLOBAL SEBELUM PENGURANGAN ---
-                // Pastikan stok total barang cukup sebelum mencoba mengurangi
-                if ($barang->stok < $totalJumlah) {
-                    throw new \Exception("Stok tidak cukup untuk barang: {$barang->nama_barang}. Stok tersedia: {$barang->stok}, Dibutuhkan: {$totalJumlah}");
-                }
-
-                // --- PENGURANGAN STOK GLOBAL ---
-                // Kurangi stok total barang di tabel 'Barang'
-                $barang->stok -= $totalJumlah;
-                $barang->save(); // Simpan perubahan stok global
-
-                // --- ALOKASI STOK MENGGUNAKAN METODE FIFO ---
-                $remaining = $totalJumlah; // Jumlah yang masih perlu dialokasikan dari batch
-
-                // Ambil semua detail pembelian (batch) untuk barang ini
-                // Urutkan berdasarkan tanggal pembuatan (FIFO: yang pertama masuk, pertama keluar)
-                // Hanya ambil batch yang masih memiliki sisa stok (> 0)
-                $batches = PembelianDetail::where('id_barang', $idBarang)
-                    ->where('sisa', '>', 0)
-                    ->orderBy('created_at', 'asc') // Urutkan secara ascending (dari yang paling lama)
-                    ->get();
-
-                // Iterasi melalui setiap batch pembelian yang tersedia
-                foreach ($batches as $batch) {
-                    // Jika semua jumlah penjualan sudah terpenuhi, keluar dari loop batch
-                    if ($remaining <= 0) {
-                        break;
-                    }
-
-                    // Tentukan berapa banyak stok yang bisa diambil dari batch saat ini
-                    // Ambil yang lebih kecil antara sisa kebutuhan ($remaining) atau stok yang tersedia di batch ($batch->sisa)
-                    $take = min($remaining, $batch->sisa);
-
-                    // --- PENGURANGAN STOK PER BATCH ---
-                    // Kurangi jumlah sisa stok pada batch pembelian ini
-                    $batch->sisa -= $take;
-                    $batch->save(); // Simpan perubahan pada sisa stok batch
-
-                    // --- BUAT DETAIL PENJUALAN UNTUK BATCH INI ---
-                    // Catat bahwa sebagian (atau seluruh) barang yang terjual diambil dari batch pembelian ini
-                    PenjualanDetail::create([
-                        'id_penjualan' => $penjualan->id,
-                        'id_barang' => $idBarang,
-                        'jumlah_penjualan' => $take, // Jumlah yang diambil dari batch ini
-                        'harga_jual' => $hargaJual,
-                        'id_pembelian_detail' => $batch->id, // Tautkan ke ID detail pembelian (batch)
-                    ]);
-
-                    // Kurangi jumlah yang masih perlu dialokasikan
-                    $remaining -= $take;
-                }
-
-                // --- VALIDASI KONSISTENSI STOK BATCH ---
-                // Setelah semua batch diproses, pastikan tidak ada sisa kebutuhan yang belum terpenuhi
-                if ($remaining > 0) {
-                    // Ini berarti ada kekurangan stok di batch, padahal stok global sudah dicek
-                    // Kemungkinan data sisa stok di PembelianDetail tidak konsisten dengan stok global
-                    throw new \Exception("Kesalahan alokasi stok FIFO untuk barang: {$barang->nama_barang}. Masih ada {$remaining} unit yang belum dialokasikan dari batch.");
-                }
-            }
-        });
     }
 }

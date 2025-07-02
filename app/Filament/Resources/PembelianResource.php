@@ -11,6 +11,7 @@ use Filament\Tables\Table;
 use Illuminate\Support\Js;
 use Filament\Support\RawJs;
 use App\Models\KategoriBarang;
+use App\Models\PembelianDetail;
 use Filament\Resources\Resource;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Date;
@@ -51,6 +52,14 @@ class PembelianResource extends Resource
                             ->searchable()
                             ->preload()
                             ->required()
+                            ->reactive()
+                            ->afterStateUpdated(function ($state, callable $set) {
+                                // Ambil harga dari barang terpilih
+                                $barang = \App\Models\Barang::find($state);
+                                if ($barang) {
+                                    $set('harga_beli', $barang->harga_barang);
+                                }
+                            })
                             ->createOptionForm([
                                 Forms\Components\TextInput::make('nama_barang')
                                     ->required()
@@ -80,12 +89,25 @@ class PembelianResource extends Resource
                             ->createOptionUsing(function (array $data): int {
                                 // Logika untuk menyimpan data barang baru ke database
                                 $barang = Barang::create($data);
-                                return $barang->id; // Kembalikan ID dari barang yang baru dibuat
+                                return $barang->id;
                             }),
                         Forms\Components\TextInput::make('jumlah_pembelian')
                             ->numeric()
                             ->minValue(1)
                             ->required(),
+                        Forms\Components\TextInput::make('harga_beli')
+                            ->numeric()
+                            ->label('Harga Beli (Rupiah)')
+                            ->prefix('Rp')
+                            ->mask(RawJs::make(<<<'JS'
+                                    $input => {
+                                        let number = $input.replace(/\D/g, '');
+                                        return new Intl.NumberFormat('id-ID').format(number);
+                                    }
+                                JS))
+                            ->stripCharacters(['.', ','])
+                            ->placeholder('Masukkan harga beli'),
+
                     ])
                     ->columns(2),
 
@@ -99,36 +121,32 @@ class PembelianResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            ->query(fn () => PembelianDetail::with(['barang', 'pembelian']))
             ->columns([
-                Tables\Columns\TextColumn::make('tgl_pembelian')
+                Tables\Columns\TextColumn::make('no')
+                    ->rowIndex(),
+                Tables\Columns\TextColumn::make('pembelian.tgl_pembelian')
                     ->label('Tanggal Pembelian')
-                    ->date()
+                    ->date('d M Y')
                     ->sortable()
                     ->searchable(),
-                Tables\Columns\TextColumn::make('pembelianDetails.barang.nama_barang')
+                Tables\Columns\TextColumn::make('barang.nama_barang')
                     ->label('Barang')
                     ->searchable()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('pembelianDetails.jumlah_pembelian')
+                Tables\Columns\TextColumn::make('jumlah_pembelian')
                     ->label('Jumlah Pembelian')
                     ->numeric()
                     ->sortable(),
-                // Tables\Columns\TextColumn::make('pembelianDetails.harga_satuan')
-                //     ->label('Harga Satuan')
-                //     ->numeric()
-                //     ->prefix('Rp')
-                //     ->sortable()
-                //     ->formatStateUsing(fn($state) => number_format($state, 0, ',', '.')),
-                // Tables\Columns\TextColumn::make('pembelianDetails.harga_satuan')
-                //     ->label('Total Harga')
-                //     ->numeric()
-                //     ->prefix('Rp')
-                //     ->sortable()
-                //     ->formatStateUsing(function ($state, $record) {
-                //         return number_format($record->pembelianDetails->sum(function ($detail) {
-                //             return $detail->jumlah_pembelian * $detail->harga_satuan;
-                //         }), 0, ',', '.');
-                //     }),
+                Tables\Columns\TextColumn::make('harga_beli')
+                    ->label('Harga')
+                    ->numeric()
+                    ->prefix('Rp ')
+                    ->sortable()
+                    ->formatStateUsing(function ($state) {
+                        return is_numeric($state) ? number_format((float) $state, 0, ',', '.') : '-';
+                    }),
+
             ])
             ->filters([
                 //

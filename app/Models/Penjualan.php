@@ -15,7 +15,8 @@ class Penjualan extends Model
 
     protected $fillable = [
         'tgl_penjualan',
-        'id_pelanggan'
+        'id_pelanggan',
+        'harga_jual'
     ];
 
     protected $casts = [
@@ -32,7 +33,6 @@ class Penjualan extends Model
     {
         return $this->penjualanDetails->sum('jumlah_penjualan');
     }
-
 
     // Relasi ke Detail Penjualan
     public function penjualanDetails(): HasMany
