@@ -156,7 +156,7 @@ class PenjualanResource extends Resource
         return [
             'index' => Pages\ListPenjualans::route('/'),
             'create' => Pages\CreatePenjualan::route('/create'),
-            'edit' => Pages\EditPenjualan::route('/{record}/edit'),
+            // 'edit' => Pages\EditPenjualan::route('/{record}/edit'),
         ];
     }
 }

@@ -21,7 +21,7 @@ class LaporanStokResource extends Resource
     protected static ?string $model = PembelianDetail::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-archive-box';
-    protected static ?string $navigationLabel = 'Laporan Stok';
+    protected static ?string $navigationLabel = 'Stok';
     protected static ?string $navigationGroup = 'Laporan';
     protected static ?int $navigationSort = 1;
 
@@ -105,7 +105,7 @@ class LaporanStokResource extends Resource
             ->actions([])
             ->bulkActions([]);
     }
-    
+
     public static function getRelations(): array
     {
         return [];
