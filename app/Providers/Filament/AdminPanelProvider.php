@@ -17,6 +17,8 @@ use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
 use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
+use Illuminate\Support\HtmlString;
+
 
 class AdminPanelProvider extends PanelProvider
 {
@@ -31,7 +33,17 @@ class AdminPanelProvider extends PanelProvider
                 'primary' => Color::Indigo,
             ])
             ->spa()
-            ->brandName('Toko Bunda Firna')
+            ->favicon(asset('img/logo.png'))
+            ->brandLogo(
+                new HtmlString('
+                    <div class="flex items-center gap-4">
+                        <img src="' . asset('img/logo-toko.png') . '" class="h-8 w-auto" alt="Logo">
+                        <span class="text-lg font-bold text-gray-800 dark:text-white">
+                            Toko Bunda Firna
+                        </span>
+                    </div>
+                ')
+            )
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\\Filament\\Resources')
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\\Filament\\Pages')
             ->pages([

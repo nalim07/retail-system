@@ -15,6 +15,7 @@ use Filament\Forms\Components\DatePicker;
 use Filament\Tables\Filters\SelectFilter;
 use Illuminate\Database\Eloquent\Builder;
 use App\Filament\Resources\LaporanStokResource\Pages;
+use Filament\Tables\Contracts\HasTable;
 
 class LaporanStokResource extends Resource
 {
@@ -75,31 +76,44 @@ class LaporanStokResource extends Resource
             ->filters([
                 Filter::make('tanggal')
                     ->form([
-                        DatePicker::make('from')->label('Dari')->reactive(),
-                        DatePicker::make('to')->label('Sampai')->reactive(),
+                        Forms\Components\Grid::make(2)
+                            ->schema([
+                                Forms\Components\DatePicker::make('from')
+                                    ->label('Mulai Dari')
+                                    ->reactive(),
+                                Forms\Components\DatePicker::make('to')
+                                    ->label('Sampai')
+                                    ->reactive(),
+                            ]),
                     ])
                     ->query(function (Builder $query, array $data) {
                         return $query
-                            ->when($data['from'], fn($q) => $q->whereDate('pembelian.tgl_pembelian', '>=', $data['from']))
-                            ->when($data['to'], fn($q) => $q->whereDate('pembelian.tgl_pembelian', '<=', $data['to']));
+                            ->when($data['from'], fn($q) => $q->whereHas('pembelian', fn($sub) => $sub->whereDate('tgl_pembelian', '>=', $data['from'])))
+                            ->when($data['to'], fn($q) => $q->whereHas('pembelian', fn($sub) => $sub->whereDate('tgl_pembelian', '<=', $data['to'])));
                     })
                     ->indicateUsing(function (array $data): ?string {
                         if (!$data['from'] && !$data['to']) {
                             return null;
                         }
 
-                        return 'Tanggal: ' . ($data['from'] ?? '-') . ' s/d ' . ($data['to'] ?? '-');
+                        return 'Tanggal: ' . ($data['from'] ? \Carbon\Carbon::parse($data['from'])->format('d/m/Y') : '-') . ' s/d ' . ($data['to'] ? \Carbon\Carbon::parse($data['to'])->format('d/m/Y') : '-');
                     }),
+                SelectFilter::make('kategori')
+                    ->relationship('barang.kategori', 'nama_kategori')
+                    ->multiple()
+                    ->searchable()
+                    ->preload()
+                    ->label('Kategori Barang'),
             ], layout: FiltersLayout::AboveContent)
-            ->modifyQueryUsing(function (Builder $query) {
-                // Pastikan join pembelian agar filter by tanggal bisa
-                $query->join('pembelian', 'pembelian.id', '=', 'pembelian_detail.id_pembelian');
-
-                // Jika belum pilih tanggal, jangan tampilkan data
-                $filters = request()->input('tableFilters.tanggal', []);
-                if (empty($filters['from']) && empty($filters['to'])) {
-                    $query->whereRaw('1 = 0'); // kosongkan hasil
-                }
+            ->filtersFormColumns(2)
+            ->persistFiltersInSession()
+            ->modifyQueryUsing(function (Builder $query, HasTable $livewire) {
+                // Ambil data filter langsung dari state komponen Livewire, bukan dari request()
+                $filterData = $livewire->tableFilters['tanggal'] ?? [];
+                $query->when(
+                    empty($filterData['from']) && empty($filterData['to']),
+                    fn(Builder $q) => $q->whereRaw('1 = 0')
+                );
             })
 
             ->actions([])
