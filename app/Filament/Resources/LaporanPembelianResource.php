@@ -9,6 +9,9 @@ use App\Models\Pembelian;
 use Filament\Tables\Table;
 use App\Models\LaporanPembelian;
 use Filament\Resources\Resource;
+use Filament\Tables\Filters\Filter;
+use Filament\Tables\Contracts\HasTable;
+use Filament\Tables\Enums\FiltersLayout;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Resources\LaporanPembelianResource\Pages;
@@ -18,10 +21,11 @@ class LaporanPembelianResource extends Resource
 {
     protected static ?string $model = Pembelian::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'heroicon-o-document-text';
     protected static ?string $navigationLabel = 'Laporan Pembelian';
     protected static ?string $navigationGroup = 'Laporan';
     protected static ?int $navigationSort = 2;
+    protected static ?string $pluralLabel = 'Laporan Pembelian';
 
     public static function form(Form $form): Form
     {
@@ -65,8 +69,43 @@ class LaporanPembelianResource extends Resource
                     ->sortable(),
             ])
             ->filters([
-                //
-            ])
+                Filter::make('tanggal')
+                    ->form([
+                        Forms\Components\Grid::make(2)->schema([
+                            Forms\Components\DatePicker::make('from')
+                                ->label('Mulai Dari')
+                                ->reactive(),
+                            Forms\Components\DatePicker::make('to')
+                                ->label('Sampai')
+                                ->reactive(),
+                        ]),
+                    ])
+                    ->query(function (Builder $query, array $data): Builder {
+                        return $query
+                            ->when($data['from'], fn($q) => $q->whereDate('tgl_pembelian', '>=', $data['from']))
+                            ->when($data['to'], fn($q) => $q->whereDate('tgl_pembelian', '<=', $data['to']));
+                    })
+                    ->indicateUsing(function (array $data): ?string {
+                        if (!$data['from'] && !$data['to']) {
+                            return null;
+                        }
+
+                        return 'Tanggal: ' .
+                            ($data['from'] ? \Carbon\Carbon::parse($data['from'])->format('d/m/Y') : '-') .
+                            ' s/d ' .
+                            ($data['to'] ? \Carbon\Carbon::parse($data['to'])->format('d/m/Y') : '-');
+                    }),
+            ], layout: FiltersLayout::AboveContent)
+            ->filtersFormColumns(2)
+            ->persistFiltersInSession()
+            ->modifyQueryUsing(function (Builder $query, HasTable $livewire) {
+                $filterData = $livewire->tableFilters['tanggal'] ?? [];
+
+                $query->when(
+                    empty($filterData['from']) && empty($filterData['to']),
+                    fn(Builder $q) => $q->whereRaw('1 = 0') // tidak tampilkan data jika filter kosong
+                );
+            })
             ->actions([
                 // Tables\Actions\ViewAction::make(),
             ])

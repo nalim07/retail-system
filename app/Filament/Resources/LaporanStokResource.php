@@ -25,6 +25,7 @@ class LaporanStokResource extends Resource
     protected static ?string $navigationLabel = 'Stok';
     protected static ?string $navigationGroup = 'Laporan';
     protected static ?int $navigationSort = 1;
+    protected static ?string $pluralLabel = 'Laporan Stok';
 
     public static function form(Form $form): Form
     {

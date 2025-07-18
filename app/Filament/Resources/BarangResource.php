@@ -34,12 +34,18 @@ class BarangResource extends Resource
             ->schema([
                 TextInput::make('nama_barang')
                     ->required()
+                    ->placeholder('Masukkan nama barang')
                     ->maxLength(255),
                 TextInput::make('jenis_barang')
                     ->required()
+                    ->placeholder('Masukkan jenis barang')
                     ->maxLength(255),
-                TextInput::make('stok')
-                    ->numeric(),
+                Select::make('id_kategori')
+                    ->label('Kategori')
+                    ->required()
+                    ->relationship('kategori', 'nama_kategori')
+                    ->searchable()
+                    ->preload(),
                 TextInput::make('harga_barang')
                     ->numeric()
                     ->label('Harga (dalam Rupiah)')
@@ -53,12 +59,7 @@ class BarangResource extends Resource
                         JS))
                     ->stripCharacters(['.', ','])
                     ->placeholder('Masukkan harga barang'),
-                Select::make('id_kategori')
-                    ->label('Kategori')
-                    ->required()
-                    ->relationship('kategori', 'nama_kategori')
-                    ->searchable()
-                    ->preload(),
+
             ]);
     }
 

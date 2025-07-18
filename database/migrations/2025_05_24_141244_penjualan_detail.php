@@ -14,11 +14,12 @@ return new class extends Migration
         Schema::create('penjualan_detail', function (Blueprint $table) {
             $table->id();
             $table->foreignId('id_penjualan')->constrained('penjualan')->onDelete('cascade');
-            $table->foreignId('id_barang')->constrained('barang')->onDelete('cascade');
-            $table->foreignId('id_pembelian_detail')->nullable()->constrained('pembelian_detail');
+            $table->foreignId('id_barang')->nullable()->constrained('barang')->onDelete('cascade')->nullOnDelete();
+            $table->foreignId('id_pembelian_detail')->nullable()->constrained('pembelian_detail')->nullOnDelete();
             $table->integer('jumlah_penjualan');
             $table->unsignedBigInteger('harga_jual')->nullable();
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

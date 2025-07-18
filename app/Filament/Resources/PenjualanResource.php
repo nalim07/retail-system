@@ -32,6 +32,7 @@ class PenjualanResource extends Resource
     protected static ?string $navigationGroup = 'Transaksi';
     protected static ?string $navigationLabel = 'Penjualan';
     protected static ?string $navigationIcon = 'heroicon-o-shopping-cart';
+    protected static ?string $pluralLabel = 'Penjualan';
 
     public static function form(Form $form): Form
     {
@@ -83,7 +84,7 @@ class PenjualanResource extends Resource
                                 if ($state > $totalSisa) {
                                     Notification::make()
                                         ->title('Stok tidak mencukupi')
-                                        ->body("Stok barang hanya tersedia {$totalSisa}, diminta {$state}.")
+                                        ->body("Stok barang hanya tersedia {$totalSisa}, permintaan {$state}.")
                                         ->danger()
                                         ->send();
 
@@ -117,7 +118,11 @@ class PenjualanResource extends Resource
                 TextColumn::make('penjualanDetails.barang.nama_barang')
                     ->label('Barang')
                     ->formatStateUsing(function ($state, $record) {
-                        return $record->penjualanDetails->pluck('barang.nama_barang')->join(', ');
+                        return $record->penjualanDetails
+                            ->map(function ($detail) {
+                                return optional($detail->barang)->nama_barang ?? 'Barang dihapus';
+                            })
+                            ->join(', ');
                     }),
 
 

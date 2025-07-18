@@ -11,8 +11,10 @@ use Filament\Tables\Table;
 use Illuminate\Support\Js;
 use Filament\Support\RawJs;
 use App\Models\KategoriBarang;
+use Illuminate\Support\Carbon;
 use App\Models\PembelianDetail;
 use Filament\Resources\Resource;
+use Filament\Tables\Grouping\Group;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Date;
 use Filament\Forms\Components\DatePicker;
@@ -30,8 +32,8 @@ class PembelianResource extends Resource
     protected static ?string $navigationGroup = 'Transaksi';
     protected static ?string $navigationLabel = 'Pembelian';
     protected static ?int $navigationSort = 2;
-
     protected static ?string $navigationIcon = 'heroicon-o-shopping-bag';
+    protected static ?string $pluralLabel = 'Pembelian';
 
     public static function form(Form $form): Form
     {
@@ -121,38 +123,48 @@ class PembelianResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
-            ->query(fn () => PembelianDetail::with(['barang', 'pembelian']))
-            ->columns([
-                Tables\Columns\TextColumn::make('no')
-                    ->rowIndex(),
-                Tables\Columns\TextColumn::make('pembelian.tgl_pembelian')
+            ->query(fn() => PembelianDetail::with(['barang', 'pembelian']))
+            ->groups([
+                Group::make('pembelian.tgl_pembelian')
                     ->label('Tanggal Pembelian')
-                    ->date('d M Y')
-                    ->sortable()
-                    ->searchable(),
+                    ->collapsible()
+                    ->getTitleFromRecordUsing(
+                        fn($record): string =>
+                        Carbon::parse($record->pembelian->tgl_pembelian)->translatedFormat('d F Y')
+                    ),
+            ])
+            ->defaultGroup('pembelian.tgl_pembelian')
+            ->columns([
+                Tables\Columns\TextColumn::make('no')->rowIndex(),
+
                 Tables\Columns\TextColumn::make('barang.nama_barang')
                     ->label('Barang')
                     ->searchable()
-                    ->sortable(),
+                    ->sortable()
+                    ->formatStateUsing(fn ($state) => $state ?? 'Barang sudah dihapus'),
+
                 Tables\Columns\TextColumn::make('jumlah_pembelian')
                     ->label('Jumlah Pembelian')
                     ->numeric()
-                    ->sortable(),
+                    ->sortable()
+                    ->badge()
+                    ->color('success'),
+
                 Tables\Columns\TextColumn::make('harga_beli')
                     ->label('Harga')
                     ->numeric()
                     ->prefix('Rp ')
                     ->sortable()
-                    ->formatStateUsing(function ($state) {
-                        return is_numeric($state) ? number_format((float) $state, 0, ',', '.') : '-';
-                    }),
-
+                    ->formatStateUsing(
+                        fn($state) =>
+                        is_numeric($state) ? number_format($state, 0, ',', '.') : '-'
+                    ),
             ])
             ->filters([
                 //
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
+                // Tables\Actions\EditAction::make(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
@@ -173,7 +185,7 @@ class PembelianResource extends Resource
         return [
             'index' => Pages\ListPembelians::route('/'),
             'create' => Pages\CreatePembelian::route('/create'),
-            'edit' => Pages\EditPembelian::route('/{record}/edit'),
+            // 'edit' => Pages\EditPembelian::route('/{record}/edit'),
         ];
     }
 }

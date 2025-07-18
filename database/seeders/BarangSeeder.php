@@ -17,8 +17,7 @@ class BarangSeeder extends Seeder
             [
                 'nama_barang' => 'Keripik Singkong',
                 'jenis_barang' => 'Keripik',
-                'harga' => 5000,
-                'stok' => 100,
+                'harga_barang' => 5000,
                 'id_kategori' => 1,
                 'created_at' => now(),
                 'updated_at' => now(),
@@ -26,8 +25,7 @@ class BarangSeeder extends Seeder
             [
                 'nama_barang' => 'Teh Botol Sosro',
                 'jenis_barang' => 'Teh',
-                'harga' => 3000,
-                'stok' => 200,
+                'harga_barang' => 7000,
                 'id_kategori' => 2,
                 'created_at' => now(),
                 'updated_at' => now(),
@@ -35,8 +33,7 @@ class BarangSeeder extends Seeder
             [
                 'nama_barang' => 'Sabun Giv',
                 'jenis_barang' => 'Sabun',
-                'harga' => 15000,
-                'stok' => 50,
+                'harga_barang' => 15000,
                 'id_kategori' => 3,
                 'created_at' => now(),
                 'updated_at' => now(),
