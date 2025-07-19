@@ -13,7 +13,6 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // User::factory(10)->create();
 
         User::factory()->create([
             'name' => 'Admin',
@@ -21,11 +20,11 @@ class DatabaseSeeder extends Seeder
             'password' => bcrypt('admin'),
         ]);
 
-        Pelanggan::factory(10)->create();
+        // Pelanggan::factory(10)->create();
 
-        $this->call([
-            KategoriBarangSeeder::class,
-            BarangSeeder::class,
-        ]);
+        // $this->call([
+        //     KategoriBarangSeeder::class,
+        //     BarangSeeder::class,
+        // ]);
     }
 }
