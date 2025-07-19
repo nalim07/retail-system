@@ -19,7 +19,6 @@ return new class extends Migration
             $table->unsignedBigInteger('harga_barang')->nullable();
             $table->foreignId('id_kategori')->constrained('kategori_barang')->onDelete('cascade');
             $table->timestamps();
-            $table->softDeletes();
         });
     }
 

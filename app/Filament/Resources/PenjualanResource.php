@@ -46,8 +46,7 @@ class PenjualanResource extends Resource
                 Select::make('id_pelanggan')
                     ->label('Pelanggan')
                     ->options(Pelanggan::pluck('nama_pelanggan', 'id'))
-                    ->searchable()
-                    ->required(),
+                    ->searchable(),
 
                 Forms\Components\Repeater::make('penjualanDetails')
                     ->label('Daftar Barang')
@@ -120,7 +119,9 @@ class PenjualanResource extends Resource
                     ->formatStateUsing(function ($state, $record) {
                         return $record->penjualanDetails
                             ->map(function ($detail) {
-                                return optional($detail->barang)->nama_barang ?? 'Barang dihapus';
+                                return $detail->barang
+                                    ? $detail->barang->nama_barang
+                                    : '🗑️ Barang sudah dihapus';
                             })
                             ->join(', ');
                     }),

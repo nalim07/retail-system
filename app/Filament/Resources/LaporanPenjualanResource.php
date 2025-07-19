@@ -16,10 +16,11 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Resources\LaporanPenjualanResource\Pages;
 use App\Filament\Resources\LaporanPenjualanResource\RelationManagers;
+use App\Models\RiwayatPenjualan;
 
 class LaporanPenjualanResource extends Resource
 {
-    protected static ?string $model = Penjualan::class;
+    protected static ?string $model = RiwayatPenjualan::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-document-chart-bar';
     protected static ?string $navigationLabel = 'Laporan Penjualan';
@@ -40,29 +41,25 @@ class LaporanPenjualanResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('no')->rowIndex(),
-                Tables\Columns\TextColumn::make('tgl_penjualan')
+                Tables\Columns\TextColumn::make('tanggal_penjualan')
                     ->label('Tanggal Penjualan')
                     ->date('d M Y')
                     ->sortable(),
-                Tables\Columns\TextColumn::make('penjualanDetails.jumlah_penjualan')
-                    ->label('Total Barang')
-                    ->formatStateUsing(function ($state, $record) {
-                        $details = [];
-                        foreach ($record->penjualanDetails as $detail) {
-                            $details[] = $detail->jumlah_penjualan . ' ' . $detail->barang->nama_barang;
-                        }
-                        return implode(', ', $details);
-                    })
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('penjualanDetails.barang.nama_barang')
+                Tables\Columns\TextColumn::make('nama_barang')
                     ->label('Nama Barang')
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('jumlah_penjualan')
+                    ->label('Total Barang')
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('harga_jual')
+                    ->label('Harga Jual')
                     ->formatStateUsing(function ($state, $record) {
-                        $details = [];
-                        foreach ($record->penjualanDetails as $detail) {
-                            $details[] = $detail->barang->nama_barang;
-                        }
-                        return implode(', ', $details);
+                        return number_format($state, 0, ',', '.');
                     })
+                    ->prefix('Rp')
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('nama_pelanggan')
+                    ->label('Nama Pelanggan')
                     ->sortable(),
 
             ])
@@ -80,8 +77,8 @@ class LaporanPenjualanResource extends Resource
                     ])
                     ->query(function (Builder $query, array $data): Builder {
                         return $query
-                            ->when($data['from'], fn($q) => $q->whereDate('tgl_penjualan', '>=', $data['from']))
-                            ->when($data['to'], fn($q) => $q->whereDate('tgl_penjualan', '<=', $data['to']));
+                            ->when($data['from'], fn($q) => $q->whereDate('tanggal_penjualan', '>=', $data['from']))
+                            ->when($data['to'], fn($q) => $q->whereDate('tanggal_penjualan', '<=', $data['to']));
                     })
                     ->indicateUsing(function (array $data): ?string {
                         if (!$data['from'] && !$data['to']) {

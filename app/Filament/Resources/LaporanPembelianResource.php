@@ -7,7 +7,7 @@ use Filament\Tables;
 use Filament\Forms\Form;
 use App\Models\Pembelian;
 use Filament\Tables\Table;
-use App\Models\LaporanPembelian;
+use App\Models\RiwayatPembelian;
 use Filament\Resources\Resource;
 use Filament\Tables\Filters\Filter;
 use Filament\Tables\Contracts\HasTable;
@@ -19,7 +19,7 @@ use App\Filament\Resources\LaporanPembelianResource\RelationManagers;
 
 class LaporanPembelianResource extends Resource
 {
-    protected static ?string $model = Pembelian::class;
+    protected static ?string $model = RiwayatPembelian::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-document-text';
     protected static ?string $navigationLabel = 'Laporan Pembelian';
@@ -40,32 +40,20 @@ class LaporanPembelianResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('no')->rowIndex(),
-                Tables\Columns\TextColumn::make('tgl_pembelian')
+                Tables\Columns\TextColumn::make('tanggal_pembelian')
                     ->label('Tanggal Pembelian')
-                    ->date('d/m/Y')
+                    ->date('d M Y')
                     ->sortable(),
-                Tables\Columns\TextColumn::make('pembelianDetails.barang.nama_barang')
+                Tables\Columns\TextColumn::make('nama_barang')
                     ->label('Nama Barang')
-                    ->formatStateUsing(function ($state, $record) {
-                        $details = [];
-                        foreach ($record->pembelianDetails as $detail) {
-                            $details[] = $detail->barang->nama_barang;
-                        }
-                        return implode(', ', $details);
-                    }),
-                // Tables\Columns\TextColumn::make('total_harga')
-                //     ->label('Total Harga')
-                //     ->money('id_ID')
-                //     ->sortable(),
-                Tables\Columns\TextColumn::make('pembelianDetails')
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('jumlah_pembelian')
                     ->label('Total Barang')
-                    ->formatStateUsing(function ($state, $record) {
-                        $details = [];
-                        foreach ($record->pembelianDetails as $detail) {
-                            $details[] = $detail->jumlah_pembelian . ' ' . $detail->barang->nama_barang;
-                        }
-                        return implode(', ', $details);
-                    })
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('harga_beli')
+                    ->label('Total Harga')
+                    ->numeric()
+                    ->prefix('Rp')
                     ->sortable(),
             ])
             ->filters([
@@ -82,8 +70,8 @@ class LaporanPembelianResource extends Resource
                     ])
                     ->query(function (Builder $query, array $data): Builder {
                         return $query
-                            ->when($data['from'], fn($q) => $q->whereDate('tgl_pembelian', '>=', $data['from']))
-                            ->when($data['to'], fn($q) => $q->whereDate('tgl_pembelian', '<=', $data['to']));
+                            ->when($data['from'], fn($q) => $q->whereDate('tanggal_pembelian', '>=', $data['from']))
+                            ->when($data['to'], fn($q) => $q->whereDate('tanggal_pembelian', '<=', $data['to']));
                     })
                     ->indicateUsing(function (array $data): ?string {
                         if (!$data['from'] && !$data['to']) {

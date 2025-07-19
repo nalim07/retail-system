@@ -141,7 +141,12 @@ class PembelianResource extends Resource
                     ->label('Barang')
                     ->searchable()
                     ->sortable()
-                    ->formatStateUsing(fn ($state) => $state ?? 'Barang sudah dihapus'),
+                    ->formatStateUsing(
+                        fn($state, $record) =>
+                        $record->barang
+                            ? $record->barang->nama_barang
+                            : '🗑️ Barang sudah dihapus'
+                    ),
 
                 Tables\Columns\TextColumn::make('jumlah_pembelian')
                     ->label('Jumlah Pembelian')
