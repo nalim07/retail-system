@@ -24,7 +24,7 @@ class LaporanPembelianResource extends Resource
     protected static ?string $navigationIcon = 'heroicon-o-document-text';
     protected static ?string $navigationLabel = 'Laporan Pembelian';
     protected static ?string $navigationGroup = 'Laporan';
-    protected static ?int $navigationSort = 2;
+    protected static ?int $navigationSort = 3;
     protected static ?string $pluralLabel = 'Laporan Pembelian';
 
     public static function form(Form $form): Form

@@ -25,7 +25,7 @@ class LaporanPenjualanResource extends Resource
     protected static ?string $navigationIcon = 'heroicon-o-document-chart-bar';
     protected static ?string $navigationLabel = 'Laporan Penjualan';
     protected static ?string $navigationGroup = 'Laporan';
-    protected static ?int $navigationSort = 3;
+    protected static ?int $navigationSort = 2;
     protected static ?string $pluralLabel = 'Laporan Penjualan';
 
     public static function form(Form $form): Form
