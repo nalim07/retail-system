@@ -63,7 +63,7 @@ class LaporanStokResource extends Resource
                     ->prefix('Rp'),
 
                 Tables\Columns\TextColumn::make('jumlah_pembelian')
-                    ->label('Jumlah Awal')
+                    ->label('Stok Awal')
                     ->numeric(),
 
                 Tables\Columns\TextColumn::make('sisa')

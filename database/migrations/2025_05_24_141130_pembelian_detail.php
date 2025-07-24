@@ -18,6 +18,7 @@ return new class extends Migration
             $table->integer('jumlah_pembelian');
             $table->integer('sisa');
             $table->unsignedBigInteger('harga_beli')->nullable();
+            $table->unsignedBigInteger('harga_jual')->nullable();
             $table->timestamps();
         });
     }

@@ -48,7 +48,7 @@ class BarangResource extends Resource
                     ->preload(),
                 TextInput::make('harga_barang')
                     ->numeric()
-                    ->label('Harga (dalam Rupiah)')
+                    ->label('Harga Jual')
                     ->inputMode('numeric')
                     ->prefix('Rp')
                     ->mask(RawJs::make(<<<'JS'
@@ -74,6 +74,7 @@ class BarangResource extends Resource
                 Tables\Columns\TextColumn::make('jenis_barang')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('harga_barang')
+                    ->label('Harga Jual')
                     ->numeric()
                     ->sortable()
                     ->prefix('Rp'),
