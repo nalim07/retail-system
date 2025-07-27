@@ -14,7 +14,11 @@ class ManagePelanggans extends ManageRecords
     {
         return [
             Actions\CreateAction::make()
-                ->modalWidth('md'),
+                ->label('Tambah')
+                ->modalWidth('md')
+                ->modalSubmitActionLabel('Tambah')
+                ->modalHeading('Tambah Pelanggan')
+                ->disableCreateAnother(),
         ];
     }
 }
