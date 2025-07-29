@@ -36,16 +36,16 @@ class BarangResource extends Resource
                     ->required()
                     ->placeholder('Masukkan nama barang')
                     ->maxLength(255),
-                TextInput::make('jenis_barang')
-                    ->required()
-                    ->placeholder('Masukkan jenis barang')
-                    ->maxLength(255),
                 Select::make('id_kategori')
                     ->label('Kategori')
                     ->required()
                     ->relationship('kategori', 'nama_kategori')
                     ->searchable()
                     ->preload(),
+                TextInput::make('jenis_barang')
+                    ->required()
+                    ->placeholder('Masukkan jenis barang')
+                    ->maxLength(255),
                 TextInput::make('harga_jual')
                     ->numeric()
                     ->label('Harga Jual')
@@ -63,7 +63,6 @@ class BarangResource extends Resource
                     ->required()
                     ->placeholder('ex: pcs, kg, liter')
                     ->maxLength(255),
-
             ]);
     }
 
