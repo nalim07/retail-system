@@ -11,6 +11,7 @@ class RiwayatPembelian extends Model
         'tanggal_pembelian',
         'nama_barang',
         'jumlah_pembelian',
+        'satuan',
         'harga_beli',
     ];
 }

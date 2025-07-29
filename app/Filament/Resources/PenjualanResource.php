@@ -60,7 +60,7 @@ class PenjualanResource extends Resource
                             ->reactive()
                             ->afterStateUpdated(function ($state, callable $set) {
                                 $barang = \App\Models\Barang::find($state);
-                                $set('harga_jual', $barang?->harga_barang ?? 0);
+                                $set('harga_jual', $barang?->harga_jual ?? 0);
                             }),
                         Forms\Components\TextInput::make('harga_jual')
                             ->label('Harga Jual')

@@ -17,7 +17,7 @@ class ListLaporanStoks extends ListRecords
         return [
             Action::make('cetak')
                 ->label('Cetak')
-                ->icon('heroicon-o-arrow-down-tray')
+                ->icon('heroicon-o-printer')
                 ->url(fn($livewire) => route('laporan-stok.preview', [
                     'from' => $livewire->tableFilters['tanggal']['from'] ?? null,
                     'to' => $livewire->tableFilters['tanggal']['to'] ?? null,

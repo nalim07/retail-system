@@ -12,6 +12,7 @@ class RiwayatPenjualan extends Model
         'nama_barang',
         'jumlah_penjualan',
         'harga_jual',
+        'satuan',
         'nama_pelanggan',
     ];
 }

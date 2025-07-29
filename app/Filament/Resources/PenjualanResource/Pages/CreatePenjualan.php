@@ -108,6 +108,7 @@ class CreatePenjualan extends CreateRecord
                     'nama_barang' => $barang->nama_barang,
                     'jumlah_penjualan' => $detail->jumlah_penjualan,
                     'harga_jual' => $detail->harga_jual,
+                    'satuan' => $barang->satuan,
                     'nama_pelanggan' => $namaPelanggan,
                 ]);
             }

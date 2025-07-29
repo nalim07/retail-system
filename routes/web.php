@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\PembelianDetail;
+use App\Models\PenjualanDetail;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\Route;
 
@@ -30,5 +31,37 @@ Route::get('/laporan-stok/preview', function () {
         'data' => $data,
         'from' => request('from'),
         'to' => request('to'),
-    ])->stream('laporan-stok.pdf'); // stream = preview, download = force download
+    ])->stream('laporan-stok.pdf');
 })->name('laporan-stok.preview');
+
+Route::get('/laporan-penjualan/preview', function () {
+    $from = request('tableFilters')['tanggal']['from'] ?? null;
+    $to = request('tableFilters')['tanggal']['to'] ?? null;
+    $pelanggan = request('tableFilters')['pelanggan'] ?? null;
+
+    $query = \App\Models\PenjualanDetail::with(['penjualan.pelanggan', 'barang']);
+
+    if ($from) {
+        $query->whereHas('penjualan', fn($q) =>
+        $q->whereDate('tgl_penjualan', '>=', $from));
+    }
+
+    if ($to) {
+        $query->whereHas('penjualan', fn($q) =>
+        $q->whereDate('tgl_penjualan', '<=', $to));
+    }
+
+    if ($pelanggan) {
+        $query->whereHas('penjualan', fn($q) =>
+        $q->where('id_pelanggan', $pelanggan));
+    }   
+
+    $data = $query->get()->groupBy(fn($item) => $item->penjualan->pelanggan->nama_pelanggan ?? '-');
+
+    return Pdf::loadView('prints.laporan-penjualan', [
+        'data' => $data,
+        'from' => request('from'),
+        'to' => request('to'),
+        'pelanggan_id' => request('pelanggan_id'),
+    ])->stream('laporan-penjualan.pdf');
+})->name('laporan-penjualan.preview');

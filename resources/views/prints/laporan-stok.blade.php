@@ -117,7 +117,7 @@
                 </tr>
             </thead>
             <tbody>
-                @foreach ($data as $i => $item)
+                @forelse ($data as $i => $item)
                     <tr>
                         <td>{{ $i + 1 }}</td>
                         <td>{{ \Carbon\Carbon::parse($item->pembelian->tgl_pembelian)->format('d-m-Y') }}</td>
@@ -128,7 +128,13 @@
                         <td class="text-right">{{ $item->jumlah_pembelian }}</td>
                         <td class="text-right">{{ $item->sisa }}</td>
                     </tr>
-                @endforeach
+                @empty
+                    <tr>
+                        <td colspan="8" class="text-center" style="text-align: center;">
+                            <em>Tidak ada data untuk periode ini.</em>
+                        </td>
+                    </tr>
+                @endforelse
             </tbody>
         </table>
 

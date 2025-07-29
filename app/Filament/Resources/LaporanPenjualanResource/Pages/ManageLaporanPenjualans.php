@@ -5,6 +5,7 @@ namespace App\Filament\Resources\LaporanPenjualanResource\Pages;
 use App\Filament\Resources\LaporanPenjualanResource;
 use Filament\Actions;
 use Filament\Resources\Pages\ManageRecords;
+use Filament\Actions\Action;
 
 class ManageLaporanPenjualans extends ManageRecords
 {
@@ -13,7 +14,14 @@ class ManageLaporanPenjualans extends ManageRecords
     protected function getHeaderActions(): array
     {
         return [
-            // Actions\CreateAction::make(),
+            Action::make('cetak')
+                ->label('Cetak')
+                ->icon('heroicon-o-printer')
+                ->url(fn() => route('laporan-penjualan.preview', [
+                    'from' => now()->subMonth()->format('Y-m-d'),
+                    'to' => now()->format('Y-m-d'),
+                ]))
+                ->openUrlInNewTab(),
         ];
     }
 }

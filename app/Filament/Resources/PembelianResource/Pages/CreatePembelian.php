@@ -29,7 +29,7 @@ class CreatePembelian extends CreateRecord
                 // Jika satuan berbeda, update (opsional: bisa dikonfirmasi user atau log peringatan)
                 $barang->satuan = $detail->satuan;
             }
-            
+
             $barang->save();
 
             // Simpan ke riwayat pembelian
@@ -37,6 +37,7 @@ class CreatePembelian extends CreateRecord
                 'tanggal_pembelian' => $pembelian->tgl_pembelian,
                 'nama_barang' => $barang->nama_barang,
                 'jumlah_pembelian' => $detail->jumlah_pembelian,
+                'satuan' => $detail->satuan,
                 'harga_beli' => $detail->harga_beli,
             ]);
         }

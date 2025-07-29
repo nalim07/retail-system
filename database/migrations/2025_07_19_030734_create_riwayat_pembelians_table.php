@@ -17,6 +17,7 @@ return new class extends Migration
             $table->string('nama_barang');
             $table->integer('jumlah_pembelian');
             $table->unsignedBigInteger('harga_beli');
+            $table->string('satuan');
             $table->timestamps();
         });
     }
