@@ -17,6 +17,7 @@ class PembelianDetail extends Model
         'id_barang',
         'jumlah_pembelian',
         'sisa',
+        'satuan',
         'harga_beli'
     ];
 

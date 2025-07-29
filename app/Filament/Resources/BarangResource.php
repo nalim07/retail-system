@@ -46,7 +46,7 @@ class BarangResource extends Resource
                     ->relationship('kategori', 'nama_kategori')
                     ->searchable()
                     ->preload(),
-                TextInput::make('harga_barang')
+                TextInput::make('harga_jual')
                     ->numeric()
                     ->label('Harga Jual')
                     ->inputMode('numeric')
@@ -58,7 +58,11 @@ class BarangResource extends Resource
                             }
                         JS))
                     ->stripCharacters(['.', ','])
-                    ->placeholder('Masukkan harga barang'),
+                    ->placeholder('Masukkan harga jual'),
+                TextInput::make('satuan')
+                    ->required()
+                    ->placeholder('ex: pcs, kg, liter')
+                    ->maxLength(255),
 
             ]);
     }
@@ -73,11 +77,15 @@ class BarangResource extends Resource
                     ->searchable(),
                 Tables\Columns\TextColumn::make('jenis_barang')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('harga_barang')
+                Tables\Columns\TextColumn::make('harga_jual')
                     ->label('Harga Jual')
                     ->numeric()
                     ->sortable()
                     ->prefix('Rp'),
+                Tables\Columns\TextColumn::make('satuan')
+                    ->label('Satuan')
+                    ->searchable()
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('stok')
                     ->numeric()
                     ->sortable(),

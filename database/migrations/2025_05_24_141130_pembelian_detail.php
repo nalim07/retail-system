@@ -16,6 +16,7 @@ return new class extends Migration
             $table->foreignId('id_pembelian')->constrained('pembelian')->onDelete('cascade');
             $table->foreignId('id_barang')->nullable()->constrained('barang')->onDelete('cascade');
             $table->integer('jumlah_pembelian');
+            $table->string('satuan');
             $table->integer('sisa');
             $table->unsignedBigInteger('harga_beli')->nullable();
             $table->unsignedBigInteger('harga_jual')->nullable();

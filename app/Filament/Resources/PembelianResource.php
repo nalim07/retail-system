@@ -59,40 +59,10 @@ class PembelianResource extends Resource
                                 // Ambil harga dari barang terpilih
                                 $barang = \App\Models\Barang::find($state);
                                 if ($barang) {
-                                    $set('harga_jual', $barang->harga_barang);
+                                    $set('satuan', $barang->satuan);
+                                    $set('harga_jual', $barang->harga_jual);
                                 }
                             }),
-                            // ->createOptionForm([
-                            //     Forms\Components\TextInput::make('nama_barang')
-                            //         ->required()
-                            //         ->maxLength(255),
-                            //     Forms\Components\TextInput::make('jenis_barang')
-                            //         ->required()
-                            //         ->maxLength(255),
-                            //     Forms\Components\TextInput::make('harga_barang')
-                            //         ->numeric()
-                            //         ->label('Harga (dalam Rupiah)')
-                            //         ->inputMode('numeric')
-                            //         ->prefix('Rp')
-                            //         ->mask(RawJs::make(<<<'JS'
-                            //         $input => {
-                            //             let number = $input.replace(/\D/g, '');
-                            //                 return new Intl.NumberFormat('id-ID').format(number);
-                            //             }
-                            //         JS))
-                            //         ->stripCharacters(['.', ','])
-                            //         ->required(),
-                            //     Forms\Components\Select::make('id_kategori')
-                            //         ->label('Kategori')
-                            //         ->required()
-                            //         ->options(KategoriBarang::pluck('nama_kategori', 'id'))
-                            //         ->searchable(),
-                            // ])
-                            // ->createOptionUsing(function (array $data): int {
-                            //     // Logika untuk menyimpan data barang baru ke database
-                            //     $barang = Barang::create($data);
-                            //     return $barang->id;
-                            // }),
                         Forms\Components\TextInput::make('jumlah_pembelian')
                             ->numeric()
                             ->minValue(1)
@@ -109,8 +79,15 @@ class PembelianResource extends Resource
                                 JS))
                             ->stripCharacters(['.', ','])
                             ->placeholder('Masukkan harga beli'),
+                        Forms\Components\TextInput::make('satuan')
+                            ->required()
+                            ->reactive()
+                            ->placeholder('ex: pcs, kg, liter')
+                            ->hintIcon('heroicon-m-question-mark-circle', tooltip: 'Satuan terisi otomatis sesuai dengan satuan yang ada di tabel barang')
+                            ->maxLength(255),
                         Forms\Components\TextInput::make('harga_jual')
                             ->numeric()
+                            ->reactive()
                             ->label('Harga Jual')
                             ->prefix('Rp')
                             ->mask(RawJs::make(<<<'JS'
@@ -120,7 +97,15 @@ class PembelianResource extends Resource
                                     }
                                 JS))
                             ->stripCharacters(['.', ','])
-                            ->placeholder('Masukkan harga jual'),
+                            ->placeholder('Masukkan harga jual')
+                            ->afterStateHydrated(function (callable $set, callable $get) {
+                                if (! $get('harga_jual') && $get('id_barang')) {
+                                    $barang = \App\Models\Barang::find($get('id_barang'));
+                                    if ($barang) {
+                                        $set('harga_jual', $barang->harga_barang);
+                                    }
+                                }
+                            }),
 
                     ])
                     ->columns(2),
@@ -176,6 +161,10 @@ class PembelianResource extends Resource
                         fn($state) =>
                         is_numeric($state) ? number_format($state, 0, ',', '.') : '-'
                     ),
+                Tables\Columns\TextColumn::make('satuan')
+                    ->label('Satuan')
+                    ->searchable()
+                    ->sortable(),
             ])
             ->filters([
                 //

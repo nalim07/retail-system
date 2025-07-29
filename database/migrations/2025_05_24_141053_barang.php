@@ -16,7 +16,8 @@ return new class extends Migration
             $table->string('nama_barang');
             $table->string('jenis_barang')->nullable();
             $table->integer('stok')->nullable();
-            $table->unsignedBigInteger('harga_barang')->nullable();
+            $table->string('satuan');
+            $table->unsignedBigInteger('harga_jual')->nullable();
             $table->foreignId('id_kategori')->constrained('kategori_barang')->onDelete('cascade');
             $table->timestamps();
         });

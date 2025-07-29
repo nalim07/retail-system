@@ -14,17 +14,17 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
 
-        User::factory()->create([
-            'name' => 'Admin',
-            'email' => 'admin@gmail.com',
-            'password' => bcrypt('admin'),
-        ]);
-
-        // Pelanggan::factory(10)->create();
-
-        // $this->call([
-        //     KategoriBarangSeeder::class,
-        //     BarangSeeder::class,
+        // User::factory()->create([
+        //     'name' => 'Admin',
+        //     'email' => 'admin@gmail.com',
+        //     'password' => bcrypt('admin'),
         // ]);
+
+        Pelanggan::factory(10)->create();
+
+        $this->call([
+            KategoriBarangSeeder::class,
+            BarangSeeder::class,
+        ]);
     }
 }
