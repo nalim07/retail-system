@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>Invoice Laporan Penjualan</title>
+    <title>Invoice Laporan Pembelian</title>
     <style>
         body {
             font-family: sans-serif;
@@ -61,6 +61,10 @@
         .text-center {
             text-align: center;
         }
+
+        .section {
+            margin-bottom: 30px;
+        }
     </style>
 </head>
 
@@ -70,7 +74,7 @@
             <table width="100%">
                 <tr>
                     <td>
-                        <h1>LAPORAN PENJUALAN</h1>
+                        <h1>LAPORAN PEMBELIAN</h1>
                         <div class="company-info">
                             {{ config('app.name') }}
                         </div>
@@ -78,11 +82,15 @@
                     <td class="invoice-info">
                         <strong>Tanggal Cetak:</strong> {{ \Carbon\Carbon::now()->format('d M Y') }}<br>
                         @if ($from || $to)
-                            <p>
-                                <strong>Periode:</strong>
+                            <p style="font-weight: bold; margin-bottom: 10px;">
+                                Periode:
                                 {{ $from ? \Carbon\Carbon::parse($from)->format('d M Y') : '-' }}
                                 s/d
                                 {{ $to ? \Carbon\Carbon::parse($to)->format('d M Y') : '-' }}
+                            </p>
+                        @else
+                            <p style="font-weight: bold; margin-bottom: 10px;">
+                                Periode: Semua tanggal
                             </p>
                         @endif
                     </td>
@@ -90,16 +98,16 @@
             </table>
         </div>
 
-        @forelse ($data as $namaPelanggan => $items)
+        @if ($data->isEmpty())
+            <p>Tidak ada data pembelian untuk ditampilkan.</p>
+        @else
             <div class="section">
-                <h3>Nama Pelanggan: {{ $namaPelanggan }}</h3>
-
                 <table class="table">
                     <thead>
                         <tr>
                             <th>Tanggal</th>
                             <th>Barang</th>
-                            <th>Harga Jual</th>
+                            <th>Harga Beli</th>
                             <th>Jumlah</th>
                             <th>Satuan</th>
                             <th>Subtotal</th>
@@ -107,14 +115,16 @@
                     </thead>
                     <tbody>
                         @php $total = 0; @endphp
-                        @foreach ($items as $item)
-                            @php $subtotal = $item->jumlah_penjualan * $item->harga_jual; @endphp
-                            @php $total += $subtotal; @endphp
+                        @foreach ($data as $item)
+                            @php
+                                $subtotal = $item->jumlah_pembelian * $item->harga_beli;
+                                $total += $subtotal;
+                            @endphp
                             <tr>
-                                <td>{{ \Carbon\Carbon::parse($item->tanggal_penjualan)->format('d-m-Y') }}</td>
+                                <td>{{ \Carbon\Carbon::parse($item->tanggal_pembelian)->format('d-m-Y') }}</td>
                                 <td>{{ $item->nama_barang }}</td>
-                                <td>Rp {{ number_format($item->harga_jual, 0, ',', '.') }}</td>
-                                <td>{{ $item->jumlah_penjualan }}</td>
+                                <td>Rp {{ number_format($item->harga_beli, 0, ',', '.') }}</td>
+                                <td>{{ $item->jumlah_pembelian }}</td>
                                 <td>{{ $item->satuan }}</td>
                                 <td>Rp {{ number_format($subtotal, 0, ',', '.') }}</td>
                             </tr>
@@ -122,12 +132,9 @@
                     </tbody>
                 </table>
 
-                <p class="total">Total Penjualan: Rp {{ number_format($total, 0, ',', '.') }}</p>
+                <p class="total"><strong>Total Pembelian: Rp {{ number_format($total, 0, ',', '.') }}</strong></p>
             </div>
-        @empty
-            <p>Tidak ada data penjualan untuk ditampilkan.</p>
-        @endforelse
-
+        @endif
     </div>
 </body>
 

@@ -17,9 +17,14 @@ class ManageLaporanPenjualans extends ManageRecords
             Action::make('cetak')
                 ->label('Cetak')
                 ->icon('heroicon-o-printer')
-                ->url(fn() => route('laporan-penjualan.preview', [
-                    'from' => now()->subMonth()->format('Y-m-d'),
-                    'to' => now()->format('Y-m-d'),
+                ->url(fn(): string => route('laporan-penjualan.preview', [
+                    'tableFilters' => [
+                        'tanggal' => [
+                            'from' => $this->tableFilters['tanggal']['from'] ?? null,
+                            'to' => $this->tableFilters['tanggal']['to'] ?? null,
+                        ],
+                        'pelanggan' => $this->tableFilters['pelanggan'] ?? null,
+                    ],
                 ]))
                 ->openUrlInNewTab(),
         ];

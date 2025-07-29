@@ -3,6 +3,8 @@
 use App\Models\PembelianDetail;
 use App\Models\PenjualanDetail;
 use Barryvdh\DomPDF\Facade\Pdf;
+use App\Models\RiwayatPembelian;
+use App\Models\RiwayatPenjualan;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -35,33 +37,58 @@ Route::get('/laporan-stok/preview', function () {
 })->name('laporan-stok.preview');
 
 Route::get('/laporan-penjualan/preview', function () {
-    $from = request('tableFilters')['tanggal']['from'] ?? null;
-    $to = request('tableFilters')['tanggal']['to'] ?? null;
-    $pelanggan = request('tableFilters')['pelanggan'] ?? null;
+    // Ambil filter dari request (baik dari tableFilters atau from/to langsung)
+    $filters = request('tableFilters') ?? [];
 
-    $query = \App\Models\PenjualanDetail::with(['penjualan.pelanggan', 'barang']);
+    $from = $filters['tanggal']['from'] ?? request('from');
+    $to = $filters['tanggal']['to'] ?? request('to');
+    $pelanggan = $filters['pelanggan'] ?? request('pelanggan');
+
+    $query = RiwayatPenjualan::query();
 
     if ($from) {
-        $query->whereHas('penjualan', fn($q) =>
-        $q->whereDate('tgl_penjualan', '>=', $from));
+        $query->whereDate('tanggal_penjualan', '>=', $from);
     }
 
     if ($to) {
-        $query->whereHas('penjualan', fn($q) =>
-        $q->whereDate('tgl_penjualan', '<=', $to));
+        $query->whereDate('tanggal_penjualan', '<=', $to);
     }
 
     if ($pelanggan) {
-        $query->whereHas('penjualan', fn($q) =>
-        $q->where('id_pelanggan', $pelanggan));
-    }   
+        $query->where('nama_pelanggan', $pelanggan);
+    }
 
-    $data = $query->get()->groupBy(fn($item) => $item->penjualan->pelanggan->nama_pelanggan ?? '-');
+    $data = $query->get()->groupBy('nama_pelanggan');
 
     return Pdf::loadView('prints.laporan-penjualan', [
         'data' => $data,
-        'from' => request('from'),
-        'to' => request('to'),
-        'pelanggan_id' => request('pelanggan_id'),
+        'from' => $from,
+        'to' => $to,
+        'pelanggan' => $pelanggan,
     ])->stream('laporan-penjualan.pdf');
 })->name('laporan-penjualan.preview');
+
+Route::get('/laporan-pembelian/preview', function () {
+    $filters = request('tableFilters') ?? [];
+
+    $from = $filters['tanggal']['from'] ?? null;
+    $to = $filters['tanggal']['to'] ?? null;
+
+    $query = RiwayatPembelian::query();
+
+    if ($from) {
+        $query->whereDate('tanggal_pembelian', '>=', $from);
+    }
+
+    if ($to) {
+        $query->whereDate('tanggal_pembelian', '<=', $to);
+    }
+
+    $data = $query->get();
+
+    return Pdf::loadView('prints.laporan-pembelian', [
+        'data' => $data,
+        'from' => $from,
+        'to' => $to,
+    ])->stream('laporan-pembelian.pdf');
+})->name('laporan-pembelian.preview');

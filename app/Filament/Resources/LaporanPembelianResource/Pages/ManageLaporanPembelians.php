@@ -2,9 +2,10 @@
 
 namespace App\Filament\Resources\LaporanPembelianResource\Pages;
 
-use App\Filament\Resources\LaporanPembelianResource;
 use Filament\Actions;
+use Filament\Actions\Action;
 use Filament\Resources\Pages\ManageRecords;
+use App\Filament\Resources\LaporanPembelianResource;
 
 class ManageLaporanPembelians extends ManageRecords
 {
@@ -13,7 +14,19 @@ class ManageLaporanPembelians extends ManageRecords
     protected function getHeaderActions(): array
     {
         return [
-            // Actions\CreateAction::make(),
+            Action::make('cetak')
+                ->label('Cetak')
+                ->icon('heroicon-o-printer')
+                ->url(fn(): string => route('laporan-pembelian.preview', [
+                    'tableFilters' => [
+                        'tanggal' => [
+                            'from' => $this->tableFilters['tanggal']['from'] ?? null,
+                            'to' => $this->tableFilters['tanggal']['to'] ?? null,
+                        ],
+                    ],
+                ]))
+
+                ->openUrlInNewTab(),
         ];
     }
 }
