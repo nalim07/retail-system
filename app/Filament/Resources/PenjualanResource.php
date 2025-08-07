@@ -21,6 +21,8 @@ use Filament\Notifications\Notification;
 use Filament\Forms\Components\DatePicker;
 use Illuminate\Database\Eloquent\Builder;
 use Filament\Forms\Components\DateTimePicker;
+use App\Filament\Actions\DeletePenjualan;
+use App\Filament\Actions\DeletePenjualanBulkAction;
 use App\Filament\Resources\PenjualanResource\Pages;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Resources\PenjualanResource\RelationManagers;
@@ -142,10 +144,12 @@ class PenjualanResource extends Resource
             ])
             ->actions([
                 Tables\Actions\ViewAction::make(),
+                Tables\Actions\EditAction::make(),
+                DeletePenjualan::make(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+                    DeletePenjualanBulkAction::make(),
                 ]),
             ]);
     }
@@ -162,7 +166,7 @@ class PenjualanResource extends Resource
         return [
             'index' => Pages\ListPenjualans::route('/'),
             'create' => Pages\CreatePenjualan::route('/create'),
-            // 'edit' => Pages\EditPenjualan::route('/{record}/edit'),
+            'edit' => Pages\EditPenjualan::route('/{record}/edit'),
         ];
     }
 }

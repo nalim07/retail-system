@@ -8,22 +8,11 @@ use App\Models\Barang;
 use Filament\Forms\Form;
 use App\Models\Pembelian;
 use Filament\Tables\Table;
-use Illuminate\Support\Js;
 use Filament\Support\RawJs;
-use App\Models\KategoriBarang;
 use Illuminate\Support\Carbon;
-use App\Models\PembelianDetail;
 use Filament\Resources\Resource;
-use Filament\Tables\Grouping\Group;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Date;
 use Filament\Forms\Components\DatePicker;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Support\Facades\Notification;
-use Filament\Forms\Components\Actions\Action;
 use App\Filament\Resources\PembelianResource\Pages;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
-use App\Filament\Resources\PembelianResource\RelationManagers;
 
 class PembelianResource extends Resource
 {
@@ -41,12 +30,12 @@ class PembelianResource extends Resource
             ->schema([
                 DatePicker::make('tgl_pembelian')
                     ->label('Tanggal Pembelian')
-                    ->default(Date::now())
+                    ->default(now())
                     ->required(),
 
-                Forms\Components\Repeater::make('pembelianDetails')
+                Forms\Components\Repeater::make('pembelianDetails') // Nama ini cocok dengan relasi
                     ->label('Daftar Barang')
-                    ->relationship('pembelianDetails')
+                    ->relationship() // Filament otomatis tahu relasinya dari nama 'pembelianDetails'
                     ->schema([
                         Forms\Components\Select::make('id_barang')
                             ->label('Barang')
@@ -56,14 +45,14 @@ class PembelianResource extends Resource
                             ->required()
                             ->reactive()
                             ->afterStateUpdated(function ($state, callable $set) {
-                                // Ambil harga dari barang terpilih
-                                $barang = \App\Models\Barang::find($state);
+                                $barang = Barang::find($state);
                                 if ($barang) {
                                     $set('satuan', $barang->satuan);
                                     $set('harga_jual', $barang->harga_jual);
                                 }
                             }),
                         Forms\Components\TextInput::make('jumlah_pembelian')
+                            ->label('Jumlah')
                             ->numeric()
                             ->minValue(1)
                             ->required(),
@@ -71,106 +60,80 @@ class PembelianResource extends Resource
                             ->numeric()
                             ->label('Harga Beli')
                             ->prefix('Rp')
-                            ->mask(RawJs::make(<<<'JS'
-                                    $input => {
-                                        let number = $input.replace(/\D/g, '');
-                                        return new Intl.NumberFormat('id-ID').format(number);
-                                    }
-                                JS))
-                            ->stripCharacters(['.', ','])
-                            ->placeholder('Masukkan harga beli'),
+                            ->required(),
                         Forms\Components\TextInput::make('satuan')
                             ->required()
-                            ->reactive()
-                            ->placeholder('ex: pcs, kg, liter')
-                            ->hintIcon('heroicon-m-question-mark-circle', tooltip: 'Satuan terisi otomatis sesuai dengan satuan yang ada di tabel barang')
-                            ->maxLength(255),
+                            ->placeholder('ex: pcs, kg'),
                         Forms\Components\TextInput::make('harga_jual')
                             ->numeric()
-                            ->reactive()
                             ->label('Harga Jual')
                             ->prefix('Rp')
-                            ->mask(RawJs::make(<<<'JS'
-                                    $input => {
-                                        let number = $input.replace(/\D/g, '');
-                                        return new Intl.NumberFormat('id-ID').format(number);
-                                    }
-                                JS))
-                            ->stripCharacters(['.', ','])
-                            ->placeholder('Masukkan harga jual')
+                            ->required()
+                            ->reactive() 
                             ->afterStateHydrated(function (callable $set, callable $get) {
-                                if (! $get('harga_jual') && $get('id_barang')) {
-                                    $barang = \App\Models\Barang::find($get('id_barang'));
+                                if (is_null($get('harga_jual')) && $get('id_barang')) {
+                                    $barang = Barang::find($get('id_barang'));
                                     if ($barang) {
-                                        $set('harga_jual', $barang->harga_barang);
+                                        $set('harga_jual', $barang->harga_jual);
                                     }
                                 }
                             }),
-
                     ])
-                    ->columns(2),
-
-            ])->columns([
-                'lg' => 1,
-                'md' => 1,
-                'sm' => 1,
+                    ->columns(2)
+                    ->addable()
+                    ->deletable()
+                    ->reorderable()
+                    ->columnSpanFull()
+                    ->required(),
             ]);
     }
 
     public static function table(Table $table): Table
     {
         return $table
-            ->query(fn() => PembelianDetail::with(['barang', 'pembelian']))
-            ->groups([
-                Group::make('pembelian.tgl_pembelian')
-                    ->label('Tanggal Pembelian')
-                    ->collapsible()
-                    ->getTitleFromRecordUsing(
-                        fn($record): string =>
-                        Carbon::parse($record->pembelian->tgl_pembelian)->translatedFormat('d F Y')
-                    ),
-            ])
-            ->defaultGroup('pembelian.tgl_pembelian')
+            // Tidak perlu ->query() lagi, karena sudah diatur oleh $model
             ->columns([
-                Tables\Columns\TextColumn::make('no')->rowIndex(),
-
-                Tables\Columns\TextColumn::make('barang.nama_barang')
-                    ->label('Barang')
-                    ->searchable()
-                    ->sortable()
-                    ->formatStateUsing(
-                        fn($state, $record) =>
-                        $record->barang
-                            ? $record->barang->nama_barang
-                            : '🗑️ Barang sudah dihapus'
-                    ),
-
-                Tables\Columns\TextColumn::make('jumlah_pembelian')
-                    ->label('Jumlah Pembelian')
-                    ->numeric()
-                    ->sortable()
-                    ->badge()
-                    ->color('success'),
-
-                Tables\Columns\TextColumn::make('harga_beli')
-                    ->label('Harga Beli')
-                    ->numeric()
-                    ->prefix('Rp ')
-                    ->sortable()
-                    ->formatStateUsing(
-                        fn($state) =>
-                        is_numeric($state) ? number_format($state, 0, ',', '.') : '-'
-                    ),
-                Tables\Columns\TextColumn::make('satuan')
-                    ->label('Satuan')
-                    ->searchable()
+                Tables\Columns\TextColumn::make('tgl_pembelian')
+                    ->label('Tanggal Pembelian')
+                    ->date('d F Y')
                     ->sortable(),
+
+                Tables\Columns\TextColumn::make('pembelianDetails.barang.nama_barang')
+                    ->label('Barang')
+                    ->sortable()
+                    ->searchable(),
+
+                // Menampilkan jumlah item dalam setiap pembelian
+                Tables\Columns\TextColumn::make('pembelianDetails.jumlah_pembelian')
+                    ->counts('pembelianDetails')
+                    ->label('Jumlah Item')
+                    ->badge(),
+
+                // (Opsional) Menampilkan total nilai pembelian
+                Tables\Columns\TextColumn::make('total_harga')
+                    ->label('Total Pembelian')
+                    ->prefix('Rp ')
+                    ->numeric(0, ',', '.')
+                    ->state(function (Pembelian $record): float {
+                        // Menghitung total dari detail
+                        return $record->pembelianDetails->sum(function ($detail) {
+                            return $detail->harga_beli * $detail->jumlah_pembelian;
+                        });
+                    }),
+
+                Tables\Columns\TextColumn::make('created_at')
+                    ->label('Dibuat Pada')
+                    ->dateTime()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
                 //
             ])
             ->actions([
-                // Tables\Actions\EditAction::make(),
+                Tables\Actions\ViewAction::make(),
+                Tables\Actions\EditAction::make(),
+                Tables\Actions\DeleteAction::make(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
@@ -191,7 +154,7 @@ class PembelianResource extends Resource
         return [
             'index' => Pages\ListPembelians::route('/'),
             'create' => Pages\CreatePembelian::route('/create'),
-            // 'edit' => Pages\EditPembelian::route('/{record}/edit'),
+            'edit' => Pages\EditPembelian::route('/{record}/edit'),
         ];
     }
 }

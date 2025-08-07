@@ -1,71 +1,126 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Sistem Retail dengan Metode FIFO
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+<p align="center"><img src="public/img/logo-toko.png" width="200" alt="Logo Toko"></p>
 
-<!-- Login User -->
-Login sebagai admin
- Email: admin@gmail.com
- Password: admin
+## Tentang Sistem
 
-## About Laravel
+Sistem Retail ini adalah aplikasi manajemen toko yang menggunakan metode FIFO (First In, First Out) untuk pengelolaan stok barang. Sistem ini dibangun menggunakan framework Laravel dan Filament untuk antarmuka admin yang modern dan responsif.
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## Fitur Utama
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+### 1. Master Data
+- **Pelanggan**: Pengelolaan data pelanggan termasuk nama, alamat, dan informasi kontak.
+- **Kategori Barang**: Pengelompokan barang berdasarkan kategori untuk memudahkan pengelolaan.
+- **Barang**: Pengelolaan data barang termasuk nama, stok, harga jual, dan kategori.
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+### 2. Transaksi
+- **Pembelian (Restok)**: Mencatat transaksi pembelian atau restok barang dari supplier.
+- **Penjualan**: Mencatat transaksi penjualan kepada pelanggan dengan implementasi metode FIFO.
 
-## Learning Laravel
+### 3. Laporan
+- **Laporan Stok**: Menampilkan informasi stok barang terkini.
+- **Laporan Penjualan**: Menampilkan riwayat dan analisis penjualan.
+- **Laporan Pembelian**: Menampilkan riwayat dan analisis pembelian.
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+## Metode FIFO (First In, First Out)
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+Sistem ini mengimplementasikan metode FIFO dalam pengelolaan stok barang, yang berarti:
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+1. Barang yang pertama kali dibeli (masuk) akan menjadi barang yang pertama kali dijual (keluar).
+2. Ketika transaksi penjualan terjadi, sistem akan otomatis mengambil stok barang dari pembelian yang paling lama.
+3. Hal ini memastikan perputaran stok yang baik dan mencegah barang menjadi kadaluarsa atau usang.
 
-## Laravel Sponsors
+## Alur Kerja Sistem
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+### Alur Pembelian (Restok)
+1. Admin mencatat transaksi pembelian barang dari supplier.
+2. Sistem menyimpan detail pembelian termasuk jumlah, harga beli, dan tanggal pembelian.
+3. Stok barang secara otomatis bertambah sesuai dengan jumlah pembelian.
+4. Sistem menyimpan sisa stok dari pembelian ini untuk digunakan dalam metode FIFO.
 
-### Premium Partners
+### Alur Penjualan
+1. Admin mencatat transaksi penjualan barang kepada pelanggan.
+2. Sistem secara otomatis mengambil stok barang dari pembelian yang paling lama (FIFO).
+3. Jika stok dari pembelian pertama habis, sistem akan mengambil dari pembelian berikutnya.
+4. Stok barang secara otomatis berkurang sesuai dengan jumlah penjualan.
+5. Sistem mencatat detail penjualan termasuk barang, jumlah, harga jual, dan pelanggan.
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[WebReinvent](https://webreinvent.com/)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Jump24](https://jump24.co.uk)**
-- **[Redberry](https://redberry.international/laravel/)**
-- **[Active Logic](https://activelogic.com)**
-- **[byte5](https://byte5.de)**
-- **[OP.GG](https://op.gg)**
+## Instalasi
 
-## Contributing
+### Persyaratan Sistem
+- PHP >= 8.1
+- Composer
+- MySQL atau MariaDB
+- Node.js & NPM
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+### Langkah Instalasi
+1. Clone repositori ini
+   ```
+   git clone [url-repositori]
+   ```
 
-## Code of Conduct
+2. Instal dependensi PHP
+   ```
+   composer install
+   ```
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+3. Instal dependensi JavaScript
+   ```
+   npm install
+   ```
 
-## Security Vulnerabilities
+4. Salin file .env.example menjadi .env dan sesuaikan konfigurasi database
+   ```
+   cp .env.example .env
+   ```
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+5. Generate application key
+   ```
+   php artisan key:generate
+   ```
 
-## License
+6. Jalankan migrasi dan seeder
+   ```
+   php artisan migrate --seed
+   ```
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+7. Compile asset
+   ```
+   npm run dev
+   ```
+
+8. Jalankan server
+   ```
+   php artisan serve
+   ```
+
+## Akses Sistem
+
+### Login Admin
+- URL: `/admin/login`
+- Email: admin@gmail.com
+- Password: admin
+
+## Struktur Database
+
+### Tabel Utama
+- **barang**: Menyimpan data master barang
+- **kategori_barang**: Menyimpan data kategori barang
+- **pelanggan**: Menyimpan data pelanggan
+- **pembelian**: Menyimpan data header transaksi pembelian
+- **pembelian_detail**: Menyimpan detail transaksi pembelian dan sisa stok untuk FIFO
+- **penjualan**: Menyimpan data header transaksi penjualan
+- **penjualan_detail**: Menyimpan detail transaksi penjualan dengan referensi ke pembelian_detail untuk FIFO
+- **riwayat_pembelians**: Menyimpan riwayat pembelian untuk laporan
+- **riwayat_penjualans**: Menyimpan riwayat penjualan untuk laporan
+
+## Pengembangan
+
+Sistem ini dikembangkan menggunakan:
+- Laravel 11.x - Framework PHP
+- Filament 3.x - Admin Panel
+- MySQL/MariaDB - Database
+
+## Lisensi
+
+Sistem ini dilisensikan di bawah [MIT license](https://opensource.org/licenses/MIT).
