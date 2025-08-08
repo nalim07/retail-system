@@ -50,8 +50,10 @@ class LaporanPembelianResource extends Resource
                 Tables\Columns\TextColumn::make('jumlah_pembelian')
                     ->label('Total Barang')
                     ->sortable(),
+                Tables\Columns\TextColumn::make('satuan')
+                    ->label('Satuan'),
                 Tables\Columns\TextColumn::make('harga_beli')
-                    ->label('Total Harga')
+                    ->label('Harga Beli')
                     ->numeric()
                     ->prefix('Rp')
                     ->sortable(),

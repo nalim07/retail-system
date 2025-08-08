@@ -17,6 +17,7 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Resources\LaporanPenjualanResource\Pages;
 use App\Filament\Resources\LaporanPenjualanResource\RelationManagers;
 use App\Models\RiwayatPenjualan;
+use Filament\Forms\Components\Tabs\Tab;
 
 class LaporanPenjualanResource extends Resource
 {
@@ -51,6 +52,8 @@ class LaporanPenjualanResource extends Resource
                 Tables\Columns\TextColumn::make('jumlah_penjualan')
                     ->label('Total Barang')
                     ->sortable(),
+                Tables\Columns\TextColumn::make('satuan')
+                    ->label('Satuan'),
                 Tables\Columns\TextColumn::make('harga_jual')
                     ->label('Harga Jual')
                     ->formatStateUsing(function ($state, $record) {

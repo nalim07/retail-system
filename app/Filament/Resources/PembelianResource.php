@@ -111,26 +111,32 @@ class PembelianResource extends Resource
                 // Menampilkan jumlah item dalam setiap pembelian
                 Tables\Columns\TextColumn::make('pembelianDetails.jumlah_pembelian')
                     ->counts('pembelianDetails')
-                    ->label('Jumlah Item')
+                    ->label('Jumlah Barang')
                     ->badge(),
 
+                Tables\Columns\TextColumn::make('pembelianDetails.harga_beli')
+                    ->label('Harga Beli')
+                    ->numeric()
+                    ->prefix('Rp')
+                    ->sortable(),
+
                 // (Opsional) Menampilkan total nilai pembelian
-                Tables\Columns\TextColumn::make('total_harga')
-                    ->label('Total Pembelian')
-                    ->prefix('Rp ')
-                    ->numeric(0, ',', '.')
-                    ->state(function (Pembelian $record): float {
-                        // Menghitung total dari detail
-                        return $record->pembelianDetails->sum(function ($detail) {
-                            return $detail->harga_beli * $detail->jumlah_pembelian;
-                        });
-                    }),
+                // Tables\Columns\TextColumn::make('total_harga')
+                //     ->label('Total Pembelian')
+                //     ->prefix('Rp ')
+                //     ->numeric(0, ',', '.')
+                //     ->state(function (Pembelian $record): float {
+                //         // Menghitung total dari detail
+                //         return $record->pembelianDetails->sum(function ($detail) {
+                //             return $detail->harga_beli * $detail->jumlah_pembelian;
+                //         });
+                //     }),
 
                 Tables\Columns\TextColumn::make('created_at')
                     ->label('Dibuat Pada')
                     ->dateTime()
                     ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                    // ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
                 //

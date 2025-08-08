@@ -143,24 +143,32 @@ class PenjualanResource extends Resource
 
 
                 TextColumn::make('jumlah_total')
-                    ->label('Jumlah')
+                    ->label('Jumlah Barang')
                     ->badge()
                     ->color('success'),
 
-                TextColumn::make('total_harga')
-                    ->label('Total')
+                TextColumn::make('penjualanDetails.harga_jual')
+                    ->label('Harga Jual')
+                    ->formatStateUsing(function ($state, $record) {
+                        return number_format($state, 0, ',', '.');
+                    })
                     ->prefix('Rp')
-                    ->numeric(0, ',', '.')
-                    ->state(function (Penjualan $record): float {
-                        return $record->penjualanDetails->sum(function ($detail) {
-                            return $detail->harga_jual * $detail->jumlah_penjualan;
-                        });
-                    }),
+                    ->sortable(),
 
-                TextColumn::make('created_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                // TextColumn::make('total_harga')
+                //     ->label('Total')
+                //     ->prefix('Rp')
+                //     ->numeric(0, ',', '.')
+                //     ->state(function (Penjualan $record): float {
+                //         return $record->penjualanDetails->sum(function ($detail) {
+                //             return $detail->harga_jual * $detail->jumlah_penjualan;
+                //         });
+                //     }),
+
+                // TextColumn::make('created_at')
+                //     ->dateTime()
+                //     ->sortable()
+                //     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
                 //
