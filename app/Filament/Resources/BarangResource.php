@@ -61,7 +61,7 @@ class BarangResource extends Resource
                     ->placeholder('Masukkan harga jual'),
                 TextInput::make('satuan')
                     ->required()
-                    ->placeholder('ex: pcs, kg, liter')
+                    ->placeholder('Contoh: pcs, kg, liter')
                     ->maxLength(255),
             ]);
     }
@@ -80,13 +80,16 @@ class BarangResource extends Resource
                     ->label('Harga Jual')
                     ->numeric()
                     ->sortable()
-                    ->prefix('Rp'),
+                    ->prefix('Rp')
+                    ->alignRight(),
+                Tables\Columns\TextColumn::make('stok')
+                    ->label('Jumlah Barang')
+                    ->numeric()
+                    ->sortable()
+                    ->alignCenter(),
                 Tables\Columns\TextColumn::make('satuan')
                     ->label('Satuan')
                     ->searchable()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('stok')
-                    ->numeric()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('kategori.nama_kategori')
                     ->label('Kategori')
@@ -106,6 +109,7 @@ class BarangResource extends Resource
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
+                Tables\Actions\DeleteAction::make(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

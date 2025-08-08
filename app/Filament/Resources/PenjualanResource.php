@@ -54,7 +54,7 @@ class PenjualanResource extends Resource
                     ->label('Daftar Barang')
                     ->relationship('penjualanDetails')
                     ->schema([
-                        Forms\Components\Select::make('id_barang')
+                        Select::make('id_barang')
                             ->label('Barang')
                             ->options(\App\Models\Barang::pluck('nama_barang', 'id'))
                             ->searchable()
@@ -63,16 +63,19 @@ class PenjualanResource extends Resource
                             ->afterStateUpdated(function ($state, callable $set) {
                                 $barang = \App\Models\Barang::find($state);
                                 $set('harga_jual', $barang?->harga_jual ?? 0);
-                            }),
-                        Forms\Components\TextInput::make('harga_jual')
-                            ->label('Harga Jual')
-                            ->prefix('Rp')
-                            ->readOnly(),
+                                // Tambahkan ini untuk mengisi satuan secara otomatis
+                                if ($barang) {
+                                    $set('satuan', $barang->satuan);
+                                }
+                            })
+                            ->columnSpanFull(),
+
                         TextInput::make('jumlah_penjualan')
-                            ->label('Jumlah')
+                            ->label('Jumlah Penjualan')
                             ->numeric()
                             ->required()
                             ->reactive()
+                            ->placeholder('Jumlah Barang yang dijual')
                             ->afterStateUpdated(function ($state, callable $get, callable $set) {
                                 $idBarang = $get('id_barang');
 
@@ -92,6 +95,16 @@ class PenjualanResource extends Resource
                                     $set('jumlah_penjualan', null); // reset input jika invalid
                                 }
                             }),
+                        TextInput::make('satuan')
+                            ->required()
+                            ->hintIcon('heroicon-m-question-mark-circle', tooltip: 'Satuan terisi otomatis sesuai dengan satuan yang ada di tabel barang')
+                            ->placeholder('contoh: pcs, kg')
+                            ->reactive()
+                            ->readOnly(),
+                        TextInput::make('harga_jual')
+                            ->label('Harga Jual')
+                            ->prefix('Rp')
+                            ->readOnly(),
                     ])
                     ->columns(3)
                     ->columnSpanFull()
@@ -133,6 +146,16 @@ class PenjualanResource extends Resource
                     ->label('Jumlah')
                     ->badge()
                     ->color('success'),
+
+                TextColumn::make('total_harga')
+                    ->label('Total')
+                    ->prefix('Rp')
+                    ->numeric(0, ',', '.')
+                    ->state(function (Penjualan $record): float {
+                        return $record->penjualanDetails->sum(function ($detail) {
+                            return $detail->harga_jual * $detail->jumlah_penjualan;
+                        });
+                    }),
 
                 TextColumn::make('created_at')
                     ->dateTime()

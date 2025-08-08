@@ -118,7 +118,9 @@ class LaporanStokResource extends Resource
             })
 
             ->actions([])
-            ->bulkActions([]);
+            ->bulkActions([
+                Tables\Actions\DeleteBulkAction::make(),
+            ]);
     }
 
     public static function getRelations(): array

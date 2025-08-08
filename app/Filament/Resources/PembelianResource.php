@@ -50,26 +50,31 @@ class PembelianResource extends Resource
                                     $set('satuan', $barang->satuan);
                                     $set('harga_jual', $barang->harga_jual);
                                 }
-                            }),
+                            })
+                            ->columnSpanFull(),
                         Forms\Components\TextInput::make('jumlah_pembelian')
-                            ->label('Jumlah')
+                            ->label('Jumlah Pembelian')
                             ->numeric()
                             ->minValue(1)
-                            ->required(),
+                            ->required()
+                            ->placeholder('Masukkan jumlah pembelian'),
+                        Forms\Components\TextInput::make('satuan')
+                            ->required()
+                            ->hintIcon('heroicon-m-question-mark-circle', tooltip: 'Satuan terisi otomatis sesuai dengan satuan yang ada di tabel barang')
+                            ->placeholder('contoh: pcs, kg')
+                            ->reactive()
+                            ->readOnly(),
                         Forms\Components\TextInput::make('harga_beli')
                             ->numeric()
                             ->label('Harga Beli')
                             ->prefix('Rp')
                             ->required(),
-                        Forms\Components\TextInput::make('satuan')
-                            ->required()
-                            ->placeholder('ex: pcs, kg'),
                         Forms\Components\TextInput::make('harga_jual')
                             ->numeric()
                             ->label('Harga Jual')
                             ->prefix('Rp')
                             ->required()
-                            ->reactive() 
+                            ->reactive()
                             ->afterStateHydrated(function (callable $set, callable $get) {
                                 if (is_null($get('harga_jual')) && $get('id_barang')) {
                                     $barang = Barang::find($get('id_barang'));

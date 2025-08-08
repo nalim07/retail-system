@@ -18,7 +18,8 @@ class PenjualanDetail extends Model
         'id_barang',
         'jumlah_penjualan',
         'harga_jual',
-        'id_pembelian_detail'
+        'id_pembelian_detail',
+        'satuan'
     ];
 
     public function penjualan(): BelongsTo
