@@ -107,16 +107,15 @@ class PembelianResource extends Resource
 
 
                 // Menampilkan jumlah item dalam setiap pembelian
-                Tables\Columns\TextColumn::make('pembelianDetails.jumlah_pembelian')
-                    ->counts('pembelianDetails')
+                Tables\Columns\TextColumn::make('jumlah_total')
                     ->label('Jumlah Pembelian')
                     ->badge(),
 
-                Tables\Columns\TextColumn::make('pembelianDetails.harga_beli')
-                    ->label('Harga Beli')
-                    ->numeric()
-                    ->prefix('Rp')
-                    ->sortable(),
+                // Tables\Columns\TextColumn::make('pembelianDetails.harga_beli')
+                //     ->label('Harga Beli')
+                //     ->numeric()
+                //     ->prefix('Rp')
+                //     ->sortable(),
 
                 // (Opsional) Menampilkan total nilai pembelian
                 // Tables\Columns\TextColumn::make('total_harga')
@@ -154,18 +153,16 @@ class PembelianResource extends Resource
                 Tables\Actions\DeleteAction::make(),
             ])
             ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
-                ]),
+                Tables\Actions\DeleteBulkAction::make(),
             ]);
     }
 
-    public static function getRelations(): array
-    {
-        return [
-            PembelianDetailRelationManager::class,
-        ];
-    }
+    // public static function getRelations(): array
+    // {
+    //     return [
+    //         PembelianDetailRelationManager::class,
+    //     ];
+    // }
 
     public static function getPages(): array
     {

@@ -132,16 +132,15 @@ class PenjualanResource extends Resource
 
                 TextColumn::make('jumlah_total')
                     ->label('Jumlah Penjualan')
-                    ->badge()
-                    ->color('success'),
+                    ->badge(),
 
-                TextColumn::make('penjualanDetails.harga_jual')
-                    ->label('Harga Jual')
-                    ->formatStateUsing(function ($state, $record) {
-                        return number_format((float) $state, 0, ',', '.');
-                    })
-                    ->prefix('Rp')
-                    ->sortable(),
+                // TextColumn::make('penjualanDetails.harga_jual')
+                //     ->label('Harga Jual')
+                //     ->formatStateUsing(function ($state, $record) {
+                //         return number_format((float) $state, 0, ',', '.');
+                //     })
+                //     ->prefix('Rp')
+                //     ->sortable(),
 
                 // TextColumn::make('total_harga')
                 //     ->label('Total')
@@ -172,9 +171,7 @@ class PenjualanResource extends Resource
                 DeletePenjualan::make(),
             ])
             ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    DeletePenjualanBulkAction::make(),
-                ]),
+                DeletePenjualanBulkAction::make(),
             ]);
     }
 

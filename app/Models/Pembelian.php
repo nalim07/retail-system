@@ -25,4 +25,9 @@ class Pembelian extends Model
     {
         return $this->hasMany(PembelianDetail::class, 'id_pembelian');
     }
+
+    public function getJumlahTotalAttribute()
+    {
+        return $this->pembelianDetails->sum('jumlah_pembelian');
+    }
 }
