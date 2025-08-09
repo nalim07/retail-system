@@ -16,6 +16,7 @@ use Illuminate\Support\Facades\DB;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Repeater;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Grouping\Group;
 use Filament\Forms\Components\TextInput;
 use Filament\Notifications\Notification;
 use Filament\Forms\Components\DatePicker;
@@ -24,8 +25,8 @@ use Filament\Forms\Components\DateTimePicker;
 use App\Filament\Actions\DeletePenjualan;
 use App\Filament\Actions\DeletePenjualanBulkAction;
 use App\Filament\Resources\PenjualanResource\Pages;
+use App\Filament\Resources\PenjualanResource\RelationManagers\PenjualanDetailRelationManager;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
-use App\Filament\Resources\PenjualanResource\RelationManagers;
 
 class PenjualanResource extends Resource
 {
@@ -129,28 +130,15 @@ class PenjualanResource extends Resource
                     ->searchable()
                     ->sortable(),
 
-                TextColumn::make('penjualanDetails.barang.nama_barang')
-                    ->label('Barang')
-                    ->formatStateUsing(function ($state, $record) {
-                        return $record->penjualanDetails
-                            ->map(function ($detail) {
-                                return $detail->barang
-                                    ? $detail->barang->nama_barang
-                                    : '🗑️ Barang sudah dihapus';
-                            })
-                            ->join(', ');
-                    }),
-
-
                 TextColumn::make('jumlah_total')
-                    ->label('Jumlah Barang')
+                    ->label('Jumlah Penjualan')
                     ->badge()
                     ->color('success'),
 
                 TextColumn::make('penjualanDetails.harga_jual')
                     ->label('Harga Jual')
                     ->formatStateUsing(function ($state, $record) {
-                        return number_format($state, 0, ',', '.');
+                        return number_format((float) $state, 0, ',', '.');
                     })
                     ->prefix('Rp')
                     ->sortable(),
@@ -170,6 +158,11 @@ class PenjualanResource extends Resource
                 //     ->sortable()
                 //     ->toggleable(isToggledHiddenByDefault: true),
             ])
+            // ->groups([
+            //     Group::make('pelanggan.nama_pelanggan')
+            //         ->label('Nama Pelanggan')
+            //         ->collapsible(),
+            // ])
             ->filters([
                 //
             ])
@@ -185,12 +178,12 @@ class PenjualanResource extends Resource
             ]);
     }
 
-    public static function getRelations(): array
-    {
-        return [
-            //
-        ];
-    }
+    // public static function getRelations(): array
+    // {
+    //     return [
+    //         PenjualanDetailRelationManager::class,
+    //     ];
+    // }
 
     public static function getPages(): array
     {

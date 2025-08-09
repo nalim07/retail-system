@@ -5,14 +5,16 @@ namespace App\Filament\Resources;
 use Filament\Forms;
 use Filament\Tables;
 use App\Models\Barang;
-use Filament\Forms\Form;
 use App\Models\Pembelian;
+use Filament\Forms\Form;
 use Filament\Tables\Table;
 use Filament\Support\RawJs;
 use Illuminate\Support\Carbon;
 use Filament\Resources\Resource;
+use Filament\Tables\Grouping\Group;
 use Filament\Forms\Components\DatePicker;
 use App\Filament\Resources\PembelianResource\Pages;
+use App\Filament\Resources\PembelianResource\RelationManagers\PembelianDetailRelationManager;
 
 class PembelianResource extends Resource
 {
@@ -103,15 +105,11 @@ class PembelianResource extends Resource
                     ->date('d F Y')
                     ->sortable(),
 
-                Tables\Columns\TextColumn::make('pembelianDetails.barang.nama_barang')
-                    ->label('Barang')
-                    ->sortable()
-                    ->searchable(),
 
                 // Menampilkan jumlah item dalam setiap pembelian
                 Tables\Columns\TextColumn::make('pembelianDetails.jumlah_pembelian')
                     ->counts('pembelianDetails')
-                    ->label('Jumlah Barang')
+                    ->label('Jumlah Pembelian')
                     ->badge(),
 
                 Tables\Columns\TextColumn::make('pembelianDetails.harga_beli')
@@ -132,12 +130,21 @@ class PembelianResource extends Resource
                 //         });
                 //     }),
 
-                Tables\Columns\TextColumn::make('created_at')
-                    ->label('Dibuat Pada')
-                    ->dateTime()
-                    ->sortable()
-                    // ->toggleable(isToggledHiddenByDefault: true),
+                // Tables\Columns\TextColumn::make('created_at')
+                //     ->label('Dibuat Pada')
+                //     ->dateTime()
+                //     ->sortable()
+                //     ->toggleable(isToggledHiddenByDefault: true),
             ])
+            // ->groups([
+            //     Group::make('tgl_pembelian')
+            //         ->label('Tanggal Pembelian')
+            //         ->collapsible()
+            //         ->getTitleFromRecordUsing(
+            //             fn($record): string =>
+            //             \Carbon\Carbon::parse($record->tgl_pembelian)->translatedFormat('d F Y')
+            //         ),
+            // ])
             ->filters([
                 //
             ])
@@ -156,7 +163,7 @@ class PembelianResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //
+            PembelianDetailRelationManager::class,
         ];
     }
 

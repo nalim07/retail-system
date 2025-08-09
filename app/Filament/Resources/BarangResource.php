@@ -37,7 +37,7 @@ class BarangResource extends Resource
                     ->placeholder('Masukkan nama barang')
                     ->maxLength(255),
                 Select::make('id_kategori')
-                    ->label('Kategori')
+                    ->label('Kategori Barang')
                     ->required()
                     ->relationship('kategori', 'nama_kategori')
                     ->searchable()
