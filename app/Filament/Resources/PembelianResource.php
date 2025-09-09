@@ -98,13 +98,18 @@ class PembelianResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
-            // Tidak perlu ->query() lagi, karena sudah diatur oleh $model
+            ->query(fn () => Pembelian::with(['pembelianDetails.barang']))
             ->columns([
                 Tables\Columns\TextColumn::make('tgl_pembelian')
                     ->label('Tanggal Pembelian')
                     ->date('d F Y')
                     ->sortable(),
 
+                // nama barang
+                Tables\Columns\TextColumn::make('pembelianDetails.barang.nama_barang')
+                    ->label('Nama Barang')
+                    ->searchable()
+                    ->sortable(),
 
                 // Menampilkan jumlah item dalam setiap pembelian
                 Tables\Columns\TextColumn::make('jumlah_total')
