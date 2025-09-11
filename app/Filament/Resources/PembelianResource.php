@@ -41,7 +41,23 @@ class PembelianResource extends Resource
                     ->schema([
                         Forms\Components\Select::make('id_barang')
                             ->label('Barang')
-                            ->options(Barang::pluck('nama_barang', 'id'))
+                            ->options(function (callable $get) {
+                                // Ambil semua barang
+                                $allBarang = Barang::pluck('nama_barang', 'id')->toArray();
+                                
+                                // Ambil barang yang sudah dipilih di repeater items lain
+                                $selectedBarang = collect($get('../../pembelianDetails') ?? [])
+                                    ->pluck('id_barang')
+                                    ->filter()
+                                    ->toArray();
+                                
+                                // Hapus barang yang sudah dipilih, kecuali item saat ini
+                                $currentBarang = $get('id_barang');
+                                $selectedBarang = array_diff($selectedBarang, [$currentBarang]);
+                                
+                                // Return options yang belum dipilih
+                                return array_diff_key($allBarang, array_flip($selectedBarang));
+                            })
                             ->searchable()
                             ->preload()
                             ->required()

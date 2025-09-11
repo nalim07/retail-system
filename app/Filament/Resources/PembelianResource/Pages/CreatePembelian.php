@@ -6,10 +6,37 @@ use Filament\Actions;
 use App\Models\RiwayatPembelian;
 use Filament\Resources\Pages\CreateRecord;
 use App\Filament\Resources\PembelianResource;
+use Filament\Notifications\Notification;
 
 class CreatePembelian extends CreateRecord
 {
     protected static string $resource = PembelianResource::class;
+
+    protected function beforeCreate(): void
+    {
+        $formState = $this->form->getState();
+        $pembelianDetails = $formState['pembelianDetails'] ?? [];
+        
+        // Validasi barang duplikat
+        $selectedBarang = [];
+        foreach ($pembelianDetails as $detail) {
+            $idBarang = $detail['id_barang'] ?? null;
+            
+            if ($idBarang) {
+                if (in_array($idBarang, $selectedBarang)) {
+                    Notification::make()
+                        ->title('Barang Duplikat')
+                        ->body('Tidak dapat menginput barang yang sama dalam satu pembelian.')
+                        ->danger()
+                        ->send();
+                    
+                    $this->halt(); // Hentikan proses create
+                }
+                
+                $selectedBarang[] = $idBarang;
+            }
+        }
+    }
 
     protected function afterCreate(): void
     {
