@@ -7,8 +7,8 @@ use Filament\Tables;
 use Filament\Forms\Form;
 use App\Models\Pembelian;
 use Filament\Tables\Table;
-use App\Models\RiwayatPembelian;
 use Filament\Resources\Resource;
+use App\Models\PembelianDetail;
 use Filament\Tables\Filters\Filter;
 use Filament\Tables\Contracts\HasTable;
 use Filament\Tables\Enums\FiltersLayout;
@@ -19,7 +19,7 @@ use App\Filament\Resources\LaporanPembelianResource\RelationManagers;
 
 class LaporanPembelianResource extends Resource
 {
-    protected static ?string $model = RiwayatPembelian::class;
+    protected static ?string $model = PembelianDetail::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-document-text';
     protected static ?string $navigationLabel = 'Laporan Pembelian';
@@ -38,13 +38,14 @@ class LaporanPembelianResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            ->modifyQueryUsing(fn (Builder $query) => $query->with(['pembelian', 'barang']))
             ->columns([
                 Tables\Columns\TextColumn::make('no')->rowIndex(),
-                Tables\Columns\TextColumn::make('tanggal_pembelian')
+                Tables\Columns\TextColumn::make('pembelian.tgl_pembelian')
                     ->label('Tanggal Pembelian')
                     ->date('d M Y')
                     ->sortable(),
-                Tables\Columns\TextColumn::make('nama_barang')
+                Tables\Columns\TextColumn::make('barang.nama_barang')
                     ->label('Nama Barang')
                     ->sortable(),
                 Tables\Columns\TextColumn::make('jumlah_pembelian')
@@ -72,8 +73,8 @@ class LaporanPembelianResource extends Resource
                     ])
                     ->query(function (Builder $query, array $data): Builder {
                         return $query
-                            ->when($data['from'], fn($q) => $q->whereDate('tanggal_pembelian', '>=', $data['from']))
-                            ->when($data['to'], fn($q) => $q->whereDate('tanggal_pembelian', '<=', $data['to']));
+                            ->when($data['from'], fn($q) => $q->whereHas('pembelian', fn($subQuery) => $subQuery->whereDate('tgl_pembelian', '>=', $data['from'])))
+                            ->when($data['to'], fn($q) => $q->whereHas('pembelian', fn($subQuery) => $subQuery->whereDate('tgl_pembelian', '<=', $data['to'])));
                     })
                     ->indicateUsing(function (array $data): ?string {
                         if (!$data['from'] && !$data['to']) {

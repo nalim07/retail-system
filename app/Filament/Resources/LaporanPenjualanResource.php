@@ -7,7 +7,6 @@ use Filament\Tables;
 use Filament\Forms\Form;
 use App\Models\Penjualan;
 use Filament\Tables\Table;
-use App\Models\LaporanPenjualan;
 use Filament\Resources\Resource;
 use Filament\Tables\Filters\Filter;
 use Filament\Tables\Contracts\HasTable;
@@ -16,12 +15,12 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Resources\LaporanPenjualanResource\Pages;
 use App\Filament\Resources\LaporanPenjualanResource\RelationManagers;
-use App\Models\RiwayatPenjualan;
+use App\Models\PenjualanDetail;
 use Filament\Forms\Components\Tabs\Tab;
 
 class LaporanPenjualanResource extends Resource
 {
-    protected static ?string $model = RiwayatPenjualan::class;
+    protected static ?string $model = PenjualanDetail::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-document-chart-bar';
     protected static ?string $navigationLabel = 'Laporan Penjualan';
@@ -40,13 +39,14 @@ class LaporanPenjualanResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            ->modifyQueryUsing(fn (Builder $query) => $query->with(['penjualan.pelanggan', 'barang']))
             ->columns([
                 Tables\Columns\TextColumn::make('no')->rowIndex(),
-                Tables\Columns\TextColumn::make('tanggal_penjualan')
+                Tables\Columns\TextColumn::make('penjualan.tgl_penjualan')
                     ->label('Tanggal Penjualan')
                     ->date('d M Y')
                     ->sortable(),
-                Tables\Columns\TextColumn::make('nama_barang')
+                Tables\Columns\TextColumn::make('barang.nama_barang')
                     ->label('Nama Barang')
                     ->sortable(),
                 Tables\Columns\TextColumn::make('jumlah_penjualan')
@@ -61,7 +61,7 @@ class LaporanPenjualanResource extends Resource
                     })
                     ->prefix('Rp')
                     ->sortable(),
-                Tables\Columns\TextColumn::make('nama_pelanggan')
+                Tables\Columns\TextColumn::make('penjualan.pelanggan.nama_pelanggan')
                     ->label('Nama Pelanggan')
                     ->sortable(),
 
@@ -80,8 +80,8 @@ class LaporanPenjualanResource extends Resource
                     ])
                     ->query(function (Builder $query, array $data): Builder {
                         return $query
-                            ->when($data['from'], fn($q) => $q->whereDate('tanggal_penjualan', '>=', $data['from']))
-                            ->when($data['to'], fn($q) => $q->whereDate('tanggal_penjualan', '<=', $data['to']));
+                            ->when($data['from'], fn($q) => $q->whereHas('penjualan', fn($subQuery) => $subQuery->whereDate('tgl_penjualan', '>=', $data['from'])))
+                            ->when($data['to'], fn($q) => $q->whereHas('penjualan', fn($subQuery) => $subQuery->whereDate('tgl_penjualan', '<=', $data['to'])));
                     })
                     ->indicateUsing(function (array $data): ?string {
                         if (!$data['from'] && !$data['to']) {
