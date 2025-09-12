@@ -123,7 +123,8 @@ class PenjualanResource extends Resource
             ->columns([
                 TextColumn::make('tgl_penjualan')
                     ->label('Tanggal')
-                    ->dateTime('d M Y'),
+                    ->dateTime('d M Y')
+                    ->sortable(),
 
                 TextColumn::make('pelanggan.nama_pelanggan')
                     ->label('Pelanggan')
