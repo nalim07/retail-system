@@ -6,7 +6,6 @@ use Filament\Actions;
 use App\Models\Barang;
 use App\Models\PembelianDetail;
 use App\Models\PenjualanDetail;
-use App\Models\RiwayatPenjualan;
 use Illuminate\Support\Facades\DB;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\CreateRecord;
@@ -100,17 +99,7 @@ class CreatePenjualan extends CreateRecord
                         ->send();
                 }
 
-                // Simpan ke riwayat
-                $namaPelanggan = $penjualan->pelanggan?->nama_pelanggan ?? '-';
-
-                RiwayatPenjualan::create([
-                    'tanggal_penjualan' => $penjualan->tgl_penjualan ?? now(),
-                    'nama_barang' => $barang->nama_barang,
-                    'jumlah_penjualan' => $detail->jumlah_penjualan,
-                    'harga_jual' => $detail->harga_jual,
-                    'satuan' => $barang->satuan,
-                    'nama_pelanggan' => $namaPelanggan,
-                ]);
+                // Tidak perlu menyimpan ke riwayat lagi
             }
         });
     }

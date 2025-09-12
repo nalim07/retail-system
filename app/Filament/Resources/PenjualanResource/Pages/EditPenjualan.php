@@ -6,7 +6,6 @@ use Filament\Actions;
 use App\Models\Barang;
 use App\Models\PembelianDetail;
 use App\Models\PenjualanDetail;
-use App\Models\RiwayatPenjualan;
 use Illuminate\Support\Facades\DB;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\EditRecord;
@@ -136,31 +135,13 @@ class EditPenjualan extends EditRecord
                 }
             }
 
-            // Hapus riwayat penjualan lama dan buat yang baru
-            RiwayatPenjualan::where('tanggal_penjualan', $this->oldRecord->tgl_penjualan)
-                ->where(function ($query) use ($penjualan) {
-                    $query->whereIn('nama_barang', $penjualan->penjualanDetails->map(function ($detail) {
-                        return $detail->barang ? $detail->barang->nama_barang : null;
-                    }))
-                    ->orWhere('nama_pelanggan', $this->oldRecord->pelanggan ? $this->oldRecord->pelanggan->nama_pelanggan : '-');
-                })
-                ->delete();
-
-            // Buat riwayat baru untuk semua detail
+            // Tidak perlu mengelola riwayat penjualan lagi
+            
             foreach ($penjualan->penjualanDetails as $detail) {
                 $barang = $detail->barang;
                 if (!$barang) continue;
-
-                $namaPelanggan = $penjualan->pelanggan ? $penjualan->pelanggan->nama_pelanggan : '-';
-
-                RiwayatPenjualan::create([
-                    'tanggal_penjualan' => $penjualan->tgl_penjualan ?? now(),
-                    'nama_barang' => $barang->nama_barang,
-                    'jumlah_penjualan' => $detail->jumlah_penjualan,
-                    'harga_jual' => $detail->harga_jual,
-                    'satuan' => $barang->satuan,
-                    'nama_pelanggan' => $namaPelanggan,
-                ]);
+                
+                // Tidak perlu membuat riwayat penjualan lagi
             }
         });
     }

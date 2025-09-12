@@ -3,8 +3,6 @@
 use App\Models\PembelianDetail;
 use App\Models\PenjualanDetail;
 use Barryvdh\DomPDF\Facade\Pdf;
-use App\Models\RiwayatPembelian;
-use App\Models\RiwayatPenjualan;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -44,21 +42,25 @@ Route::get('/laporan-penjualan/preview', function () {
     $to = $filters['tanggal']['to'] ?? request('to');
     $pelanggan = $filters['pelanggan'] ?? request('pelanggan');
 
-    $query = RiwayatPenjualan::query();
+    // Gunakan PenjualanDetail untuk laporan penjualan
+    $query = PenjualanDetail::with(['penjualan', 'barang'])
+        ->whereHas('penjualan', function($q) use ($from, $to, $pelanggan) {
+            if ($from) {
+                $q->whereDate('tgl_penjualan', '>=', $from);
+            }
+            if ($to) {
+                $q->whereDate('tgl_penjualan', '<=', $to);
+            }
+            if ($pelanggan) {
+                $q->whereHas('pelanggan', function($q) use ($pelanggan) {
+                    $q->where('nama_pelanggan', $pelanggan);
+                });
+            }
+        });
 
-    if ($from) {
-        $query->whereDate('tanggal_penjualan', '>=', $from);
-    }
-
-    if ($to) {
-        $query->whereDate('tanggal_penjualan', '<=', $to);
-    }
-
-    if ($pelanggan) {
-        $query->where('nama_pelanggan', $pelanggan);
-    }
-
-    $data = $query->get()->groupBy('nama_pelanggan');
+    $data = $query->get()->groupBy(function($item) {
+        return $item->penjualan->pelanggan ? $item->penjualan->pelanggan->nama_pelanggan : '-';
+    });
 
     return Pdf::loadView('prints.laporan-penjualan', [
         'data' => $data,
@@ -74,15 +76,16 @@ Route::get('/laporan-pembelian/preview', function () {
     $from = $filters['tanggal']['from'] ?? null;
     $to = $filters['tanggal']['to'] ?? null;
 
-    $query = RiwayatPembelian::query();
-
-    if ($from) {
-        $query->whereDate('tanggal_pembelian', '>=', $from);
-    }
-
-    if ($to) {
-        $query->whereDate('tanggal_pembelian', '<=', $to);
-    }
+    // Gunakan PembelianDetail untuk laporan pembelian
+    $query = PembelianDetail::with(['pembelian', 'barang'])
+        ->whereHas('pembelian', function($q) use ($from, $to) {
+            if ($from) {
+                $q->whereDate('tgl_pembelian', '>=', $from);
+            }
+            if ($to) {
+                $q->whereDate('tgl_pembelian', '<=', $to);
+            }
+        });
 
     $data = $query->get();
 

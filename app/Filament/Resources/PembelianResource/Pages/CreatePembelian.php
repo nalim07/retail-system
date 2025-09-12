@@ -3,7 +3,6 @@
 namespace App\Filament\Resources\PembelianResource\Pages;
 
 use Filament\Actions;
-use App\Models\RiwayatPembelian;
 use Filament\Resources\Pages\CreateRecord;
 use App\Filament\Resources\PembelianResource;
 use Filament\Notifications\Notification;
@@ -59,14 +58,7 @@ class CreatePembelian extends CreateRecord
 
             $barang->save();
 
-            // Simpan ke riwayat pembelian
-            RiwayatPembelian::create([
-                'tanggal_pembelian' => $pembelian->tgl_pembelian,
-                'nama_barang' => $barang->nama_barang,
-                'jumlah_pembelian' => $detail->jumlah_pembelian,
-                'satuan' => $detail->satuan,
-                'harga_beli' => $detail->harga_beli,
-            ]);
+            // Tidak perlu menyimpan ke riwayat pembelian lagi
         }
     }
 }

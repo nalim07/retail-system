@@ -4,7 +4,6 @@ namespace App\Filament\Actions;
 
 use App\Models\Barang;
 use App\Models\PembelianDetail;
-use App\Models\RiwayatPenjualan;
 use Filament\Tables\Actions\DeleteAction;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
@@ -60,16 +59,7 @@ class DeletePenjualan extends DeleteAction
                     );
                 }
 
-                // Hapus riwayat penjualan terkait
-                RiwayatPenjualan::where('tanggal_penjualan', $this->tglPenjualan)
-                    ->where(function ($query) {
-                        $query->whereIn('nama_barang', collect($this->penjualanDetails)->map(function ($detail) {
-                            $barang = Barang::find($detail['id_barang']);
-                            return $barang ? $barang->nama_barang : null;
-                        }))
-                        ->orWhere('nama_pelanggan', $this->namaPelanggan);
-                    })
-                    ->delete();
+                // Tidak perlu menghapus riwayat penjualan terkait lagi
 
                 Notification::make()
                     ->title('Penjualan berhasil dihapus')

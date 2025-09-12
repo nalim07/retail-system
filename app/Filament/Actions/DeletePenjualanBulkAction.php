@@ -4,7 +4,6 @@ namespace App\Filament\Actions;
 
 use App\Models\Barang;
 use App\Models\PembelianDetail;
-use App\Models\RiwayatPenjualan;
 use Filament\Tables\Actions\DeleteBulkAction;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\DB;
@@ -59,16 +58,7 @@ class DeletePenjualanBulkAction extends DeleteBulkAction
                         $restoredCount++;
                     }
 
-                    // Hapus riwayat penjualan terkait
-                    RiwayatPenjualan::where('tanggal_penjualan', $penjualan['tgl_penjualan'])
-                        ->where(function ($query) use ($penjualan) {
-                            $query->whereIn('nama_barang', collect($penjualan['details'])->map(function ($detail) {
-                                $barang = Barang::find($detail['id_barang']);
-                                return $barang ? $barang->nama_barang : null;
-                            }))
-                            ->orWhere('nama_pelanggan', $penjualan['nama_pelanggan']);
-                        })
-                        ->delete();
+                    // Tidak perlu menghapus riwayat penjualan terkait lagi
                 }
 
                 Notification::make()
