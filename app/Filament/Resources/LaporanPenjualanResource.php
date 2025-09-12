@@ -104,7 +104,7 @@ class LaporanPenjualanResource extends Resource
                     fn(Builder $q) => $q->whereRaw('1 = 0') // tidak tampilkan data jika filter kosong
                 );
             })
-            ->defaultSort('penjualan.tgl_penjualan', 'desc')
+            // ->defaultSort('penjualan.tgl_penjualan', 'desc')
             ->actions([])
             ->bulkActions([
                 Tables\Actions\DeleteBulkAction::make(),

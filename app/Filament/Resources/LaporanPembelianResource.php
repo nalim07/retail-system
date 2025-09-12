@@ -97,7 +97,7 @@ class LaporanPembelianResource extends Resource
                     fn(Builder $q) => $q->whereRaw('1 = 0') // tidak tampilkan data jika filter kosong
                 );
             })
-            ->defaultSort('pembelian.tgl_pembelian', 'desc')
+            // ->defaultSort('pembelian.tgl_pembelian', 'desc')
             ->actions([
                 // Tables\Actions\ViewAction::make(),
             ])
