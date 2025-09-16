@@ -35,7 +35,11 @@ class BarangResource extends Resource
                 TextInput::make('nama_barang')
                     ->required()
                     ->placeholder('Masukkan nama barang')
-                    ->maxLength(255),
+                    ->maxLength(255)
+                    ->unique(Barang::class, 'nama_barang', ignoreRecord: true)
+                    ->validationMessages([
+                        'unique' => 'Nama barang sudah ada. Silakan gunakan nama yang berbeda.',
+                    ]),
                 Select::make('id_kategori')
                     ->label('Kategori Barang')
                     ->required()

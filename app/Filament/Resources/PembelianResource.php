@@ -14,7 +14,7 @@ use Filament\Resources\Resource;
 use Filament\Tables\Grouping\Group;
 use Filament\Forms\Components\DatePicker;
 use App\Filament\Resources\PembelianResource\Pages;
-use App\Filament\Resources\PembelianResource\RelationManagers\PembelianDetailRelationManager;
+use App\Filament\Resources\PembelianResource\RelationManagers;
 
 class PembelianResource extends Resource
 {
@@ -178,12 +178,12 @@ class PembelianResource extends Resource
             ]);
     }
 
-    // public static function getRelations(): array
-    // {
-    //     return [
-    //         PembelianDetailRelationManager::class,
-    //     ];
-    // }
+    public static function getRelations(): array
+    {
+        return [
+            RelationManagers\FifoStokRelationManager::class,
+        ];
+    }
 
     public static function getPages(): array
     {
