@@ -76,16 +76,77 @@
         </div>
     </div>
 
-    <!-- Progress Bar -->
+    <!-- Visual FIFO Queue -->
     <div class="bg-white dark:bg-gray-800 rounded-lg p-6 border border-gray-200 dark:border-gray-700">
-        <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Progress Penjualan</h3>
-        <div class="w-full bg-gray-200 rounded-full h-4 dark:bg-gray-700">
-            <div class="bg-gradient-to-r from-green-400 to-blue-500 h-4 rounded-full transition-all duration-300"
-                 style="width: {{ $persentaseTerjual }}%"></div>
+        <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+            <x-heroicon-o-queue-list class="w-5 h-5 inline mr-2"/>
+            Visualisasi FIFO Queue
+        </h3>
+        <div class="mb-4">
+            <p class="text-sm text-gray-600 dark:text-gray-400">
+                Tanggal: {{ $record->pembelian->tgl_pembelian->format('d F Y') }} | 
+                Jumlah: {{ number_format($record->jumlah_pembelian) }} {{ $record->satuan }}
+            </p>
         </div>
-        <div class="flex justify-between text-sm text-gray-500 dark:text-gray-400 mt-2">
-            <span>0</span>
-            <span>{{ number_format($record->jumlah_pembelian) }} {{ $record->satuan }}</span>
+        
+        @php
+            $jumlahPembelian = (int) $record->jumlah_pembelian;
+            $sisaStok = (int) $record->sisa;
+            $terjual = $jumlahPembelian - $sisaStok;
+            
+            // Hitung urutan FIFO untuk batch ini
+            $urutanFifoBatch = \App\Models\PembelianDetail::where('id_barang', $record->id_barang)
+                ->where('sisa', '>', 0)
+                ->join('pembelian', 'pembelian.id', '=', 'pembelian_detail.id_pembelian')
+                ->where('pembelian.tgl_pembelian', '<', $record->pembelian->tgl_pembelian)
+                ->count() + 1;
+        @endphp
+        
+        <div class="grid grid-cols-10 sm:grid-cols-15 md:grid-cols-20 lg:grid-cols-25 gap-1 mb-4">
+            @for($i = 0; $i < $jumlahPembelian; $i++)
+                @php
+                    $sudahTerjual = $i < $terjual;
+                @endphp
+                <div class="relative group">
+                    <div class="w-8 h-8 border-2 rounded flex items-center justify-center text-xs font-bold transition-all duration-200 hover:scale-110
+                        {{ $sudahTerjual 
+                            ? 'bg-red-100 border-red-300 text-red-700 dark:bg-red-900/30 dark:border-red-600 dark:text-red-300' 
+                            : 'bg-green-100 border-green-300 text-green-700 dark:bg-green-900/30 dark:border-green-600 dark:text-green-300' 
+                        }}">
+                        {{ $urutanFifoBatch }}
+                    </div>
+                    <!-- Tooltip -->
+                    <div class="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 bg-gray-800 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-10">
+                        {{ $sudahTerjual ? 'Sudah Terjual' : 'Tersedia' }}
+                    </div>
+                </div>
+            @endfor
+        </div>
+        
+        <!-- Legend -->
+        <div class="flex flex-wrap gap-4 text-sm">
+            <div class="flex items-center gap-2">
+                <div class="w-4 h-4 bg-green-100 border-2 border-green-300 rounded dark:bg-green-900/30 dark:border-green-600"></div>
+                <span class="text-gray-600 dark:text-gray-400">Tersedia ({{ $sisaStok }} {{ $record->satuan }})</span>
+            </div>
+            <div class="flex items-center gap-2">
+                <div class="w-4 h-4 bg-red-100 border-2 border-red-300 rounded dark:bg-red-900/30 dark:border-red-600"></div>
+                <span class="text-gray-600 dark:text-gray-400">Sudah Terjual ({{ $terjual }} {{ $record->satuan }})</span>
+            </div>
+        </div>
+        
+        <!-- Progress Summary -->
+        <div class="mt-4 p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
+            <div class="flex justify-between items-center">
+                <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Progress Penjualan:</span>
+                <span class="text-sm font-bold text-gray-900 dark:text-white">
+                    {{ number_format($persentaseTerjual, 1) }}% ({{ $terjual }}/{{ $jumlahPembelian }})
+                </span>
+            </div>
+            <div class="w-full bg-gray-200 rounded-full h-2 mt-2 dark:bg-gray-600">
+                <div class="bg-gradient-to-r from-green-400 to-blue-500 h-2 rounded-full transition-all duration-300"
+                     style="width: {{ $persentaseTerjual }}%"></div>
+            </div>
         </div>
     </div>
 

@@ -95,3 +95,20 @@ Route::get('/laporan-pembelian/preview', function () {
         'to' => $to,
     ])->stream('laporan-pembelian.pdf');
 })->name('laporan-pembelian.preview');
+
+Route::get('/fifo-visualization/preview', function () {
+    // Ambil SEMUA data pembelian detail dengan stok > 0 dari seluruh sistem
+    $records = PembelianDetail::query()
+        ->join('pembelian', 'pembelian.id', '=', 'pembelian_detail.id_pembelian')
+        ->join('barang', 'barang.id', '=', 'pembelian_detail.id_barang')
+        ->with(['barang', 'pembelian'])
+        ->select('pembelian_detail.*')
+        ->where('pembelian_detail.sisa', '>', 0)
+        ->orderBy('barang.nama_barang', 'asc')
+        ->orderBy('pembelian.tgl_pembelian', 'asc')
+        ->get();
+
+    return Pdf::loadView('prints.fifo-visualization', [
+        'records' => $records
+    ])->setPaper('a4', 'landscape')->stream('fifo-visualization.pdf');
+})->name('fifo-visualization.preview');
