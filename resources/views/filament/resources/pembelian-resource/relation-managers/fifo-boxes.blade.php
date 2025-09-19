@@ -10,11 +10,12 @@
                 </p>
             </div>
             <div class="flex gap-2">
-                <a href="{{ route('fifo-visualization.preview') }}" 
-                   target="_blank"
-                   class="inline-flex items-center px-4 py-2 bg-red-600 hover:bg-red-700 text-white text-sm font-medium rounded-lg transition-colors duration-200 shadow-sm hover:shadow-md">
+                <a href="{{ route('fifo-visualization.preview') }}" target="_blank"
+                    class="inline-flex items-center px-4 py-2 bg-red-600 hover:bg-red-700 text-white text-sm font-medium rounded-lg transition-colors duration-200 shadow-sm hover:shadow-md">
                     <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z">
+                        </path>
                     </svg>
                     Cetak PDF
                 </a>
@@ -75,20 +76,28 @@
                         <div class="flex flex-wrap gap-2">
                             @for ($i = 1; $i <= $record->sisa; $i++)
                                 <div class="relative group">
-                                    <div class="w-16 h-16 {{ $boxColor }} {{ $borderColor }} border-2 rounded-lg flex items-center justify-center {{ $textColor }} font-bold text-lg shadow-md hover:shadow-lg transition-all duration-200 cursor-pointer transform hover:scale-105">
+                                    <div
+                                        class="w-16 h-16 {{ $boxColor }} {{ $borderColor }} border-2 rounded-lg flex items-center justify-center {{ $textColor }} font-bold text-lg shadow-md hover:shadow-lg transition-all duration-200 cursor-pointer transform hover:scale-105">
                                         {{ $fifoOrder }}
                                     </div>
 
                                     <!-- Tooltip -->
-                                    <div class="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-2 bg-gray-900 text-white text-xs rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-10">
+                                    <div
+                                        class="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-2 bg-gray-900 text-white text-xs rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-10">
                                         <div class="font-semibold">{{ $record->barang->nama_barang }}</div>
-                                        <div>Batch #{{ $fifoOrder }} - Unit {{ $i }}/{{ $record->sisa }}</div>
-                                        <div>Tgl Beli: {{ \Carbon\Carbon::parse($record->pembelian->tgl_pembelian)->format('d/m/Y') }}</div>
+                                        <div>Batch #{{ $fifoOrder }} - Unit
+                                            {{ $i }}/{{ $record->sisa }}</div>
+                                        <div>Tgl Beli:
+                                            {{ \Carbon\Carbon::parse($record->pembelian->tgl_pembelian)->format('d/m/Y') }}
+                                        </div>
                                         <div>Harga: Rp {{ number_format($record->harga_beli, 0, ',', '.') }}</div>
-                                        <div>Status: {{ $isFirstBatch ? 'Prioritas Keluar' : 'Menunggu Antrian' }}</div>
-                                        
+                                        <div>Status: {{ $isFirstBatch ? 'Prioritas Keluar' : 'Menunggu Antrian' }}
+                                        </div>
+
                                         <!-- Tooltip arrow -->
-                                        <div class="absolute top-full left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-gray-900"></div>
+                                        <div
+                                            class="absolute top-full left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-gray-900">
+                                        </div>
                                     </div>
                                 </div>
                             @endfor
@@ -97,7 +106,8 @@
                 </div>
 
                 <!-- Enhanced Summary Section -->
-                <div class="mt-4 p-5 bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-700 rounded-xl border border-gray-200 dark:border-gray-600 shadow-sm">
+                <div
+                    class="mt-4 p-5 bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-700 rounded-xl border border-gray-200 dark:border-gray-600 shadow-sm">
                     <h6 class="text-base font-bold text-gray-900 dark:text-white my-4 flex items-center space-x-2">
                         <svg class="w-5 h-5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -107,25 +117,32 @@
                     </h6>
 
                     <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
-                        <div class="bg-white dark:bg-gray-800 p-4 rounded-lg border border-gray-200 dark:border-gray-600 shadow-sm">
+                        <div
+                            class="bg-white dark:bg-gray-800 p-4 rounded-lg border border-gray-200 dark:border-gray-600 shadow-sm">
                             <div class="flex items-center space-x-3">
-                                <div class="w-10 h-10 bg-blue-100 dark:bg-blue-900/30 rounded-full flex items-center justify-center">
-                                    <svg class="w-5 h-5 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <div
+                                    class="w-10 h-10 bg-blue-100 dark:bg-blue-900/30 rounded-full flex items-center justify-center">
+                                    <svg class="w-5 h-5 text-blue-600 dark:text-blue-400" fill="none"
+                                        stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                             d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
                                     </svg>
                                 </div>
                                 <div>
                                     <div class="text-sm font-medium text-gray-600 dark:text-gray-400">Total Batch</div>
-                                    <div class="text-xl font-bold text-gray-900 dark:text-white">{{ $barangRecords->count() }}</div>
+                                    <div class="text-xl font-bold text-gray-900 dark:text-white">
+                                        {{ $barangRecords->count() }}</div>
                                 </div>
                             </div>
                         </div>
 
-                        <div class="bg-white dark:bg-gray-800 p-4 rounded-lg border border-gray-200 dark:border-gray-600 shadow-sm">
+                        <div
+                            class="bg-white dark:bg-gray-800 p-4 rounded-lg border border-gray-200 dark:border-gray-600 shadow-sm">
                             <div class="flex items-center space-x-3">
-                                <div class="w-10 h-10 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center">
-                                    <svg class="w-5 h-5 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <div
+                                    class="w-10 h-10 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center">
+                                    <svg class="w-5 h-5 text-green-600 dark:text-green-400" fill="none"
+                                        stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                             d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
                                     </svg>
@@ -139,10 +156,13 @@
                             </div>
                         </div>
 
-                        <div class="bg-white dark:bg-gray-800 p-4 rounded-lg border border-gray-200 dark:border-gray-600 shadow-sm">
+                        <div
+                            class="bg-white dark:bg-gray-800 p-4 rounded-lg border border-gray-200 dark:border-gray-600 shadow-sm">
                             <div class="flex items-center space-x-3">
-                                <div class="w-10 h-10 bg-emerald-100 dark:bg-emerald-900/30 rounded-full flex items-center justify-center">
-                                    <svg class="w-5 h-5 text-emerald-600 dark:text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <div
+                                    class="w-10 h-10 bg-emerald-100 dark:bg-emerald-900/30 rounded-full flex items-center justify-center">
+                                    <svg class="w-5 h-5 text-emerald-600 dark:text-emerald-400" fill="none"
+                                        stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                             d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                                     </svg>
@@ -154,16 +174,20 @@
                             </div>
                         </div>
 
-                        <div class="bg-white dark:bg-gray-800 p-4 rounded-lg border border-gray-200 dark:border-gray-600 shadow-sm">
+                        <div
+                            class="bg-white dark:bg-gray-800 p-4 rounded-lg border border-gray-200 dark:border-gray-600 shadow-sm">
                             <div class="flex items-center space-x-3">
-                                <div class="w-10 h-10 bg-purple-100 dark:bg-purple-900/30 rounded-full flex items-center justify-center">
-                                    <svg class="w-5 h-5 text-purple-600 dark:text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <div
+                                    class="w-10 h-10 bg-purple-100 dark:bg-purple-900/30 rounded-full flex items-center justify-center">
+                                    <svg class="w-5 h-5 text-purple-600 dark:text-purple-400" fill="none"
+                                        stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                             d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />
                                     </svg>
                                 </div>
                                 <div>
-                                    <div class="text-sm font-medium text-gray-600 dark:text-gray-400">Harga Rata-rata</div>
+                                    <div class="text-sm font-medium text-gray-600 dark:text-gray-400">Harga Rata-rata
+                                    </div>
                                     <div class="text-lg font-bold text-gray-900 dark:text-white">
                                         Rp {{ number_format($barangRecords->avg('harga_beli'), 0, ',', '.') }}
                                     </div>
@@ -177,17 +201,20 @@
 
         <!-- Global Legend -->
         <section aria-labelledby="ket" class="mt-6">
-            <div class="rounded-xl border border-gray-200 dark:border-gray-600 bg-white/70 dark:bg-gray-800/70 p-5 shadow-sm">
+            <div
+                class="rounded-xl border border-gray-200 dark:border-gray-600 bg-white/70 dark:bg-gray-800/70 p-5 shadow-sm">
                 <!-- Header -->
                 <div class="flex items-center gap-3 mb-4">
                     <div class="w-9 h-9 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center">
-                        <svg class="w-5 h-5 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg class="w-5 h-5 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor"
+                            viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M13 16h-1v-4h-1m1-4h.01M12 2a10 10 0 100 20 10 10 0 000-20z" />
                         </svg>
                     </div>
                     <div>
-                        <h5 id="ket" class="font-semibold text-gray-900 dark:text-white leading-tight">Keterangan</h5>
+                        <h5 id="ket" class="font-semibold text-gray-900 dark:text-white leading-tight">
+                            Keterangan</h5>
                         <p class="text-xs text-gray-600 dark:text-gray-400">Panduan membaca visualisasi FIFO</p>
                     </div>
                 </div>
@@ -197,26 +224,34 @@
                     <div class="space-y-6">
                         <h6 class="text-sm font-semibold text-gray-900 dark:text-white mb-4">Status Batch</h6>
                         <div class="space-y-4">
-                            <div class="flex items-center p-4 bg-green-50 dark:bg-green-900/20 rounded-lg border border-green-200 dark:border-green-800">
+                            <div
+                                class="flex items-center p-4 bg-green-50 dark:bg-green-900/20 rounded-lg border border-green-200 dark:border-green-800">
                                 <div class="flex items-center space-x-4">
-                                    <div class="w-10 h-10 bg-gradient-to-r from-green-400 to-green-600 rounded-lg border-2 border-green-300 flex items-center justify-center">
+                                    <div
+                                        class="w-10 h-10 bg-gradient-to-r from-green-400 to-green-600 rounded-lg border-2 border-green-300 flex items-center justify-center">
                                         <span class="text-white text-sm font-bold">1</span>
                                     </div>
                                     <div>
-                                        <div class="text-sm font-medium text-green-800 dark:text-green-200 mb-1">Batch Prioritas</div>
-                                        <div class="text-xs text-green-600 dark:text-green-300">Keluar pertama (FIFO)</div>
+                                        <div class="text-sm font-medium text-green-800 dark:text-green-200 mb-1">Batch
+                                            Prioritas</div>
+                                        <div class="text-xs text-green-600 dark:text-green-300">Keluar pertama (FIFO)
+                                        </div>
                                     </div>
                                 </div>
                             </div>
 
-                            <div class="flex items-center p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
+                            <div
+                                class="flex items-center p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
                                 <div class="flex items-center space-x-4">
-                                    <div class="w-10 h-10 bg-gradient-to-r from-blue-400 to-blue-600 rounded-lg border-2 border-blue-300 flex items-center justify-center">
+                                    <div
+                                        class="w-10 h-10 bg-gradient-to-r from-blue-400 to-blue-600 rounded-lg border-2 border-blue-300 flex items-center justify-center">
                                         <span class="text-white text-sm font-bold">2+</span>
                                     </div>
                                     <div>
-                                        <div class="text-sm font-medium text-blue-800 dark:text-blue-200 mb-1">Batch Menunggu</div>
-                                        <div class="text-xs text-blue-600 dark:text-blue-300">Antrian berdasarkan tanggal</div>
+                                        <div class="text-sm font-medium text-blue-800 dark:text-blue-200 mb-1">Batch
+                                            Menunggu</div>
+                                        <div class="text-xs text-blue-600 dark:text-blue-300">Antrian berdasarkan
+                                            tanggal</div>
                                     </div>
                                 </div>
                             </div>
@@ -228,23 +263,31 @@
                         <h6 class="text-sm font-semibold text-gray-900 dark:text-white mb-4">Panduan Penggunaan</h6>
                         <ul class="space-y-4 text-sm text-gray-700 dark:text-gray-300">
                             <li class="flex gap-3">
-                                <svg class="w-5 h-5 mt-0.5 flex-none text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6" />
+                                <svg class="w-5 h-5 mt-0.5 flex-none text-gray-400" fill="none"
+                                    stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M9 12h6" />
                                 </svg>
-                                <span class="leading-relaxed">Angka di dalam kotak menunjukkan urutan batch FIFO.</span>
+                                <span class="leading-relaxed">Angka di dalam kotak menunjukkan urutan batch
+                                    FIFO.</span>
                             </li>
-                            <li class="flex gap-3">
-                                <svg class="w-5 h-5 mt-0.5 flex-none text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            {{-- <li class="flex gap-3">
+                                <svg class="w-5 h-5 mt-0.5 flex-none text-gray-400" fill="none"
+                                    stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                         d="M13 16h-1v-4h-1m1-4h.01M12 2a10 10 0 100 20 10 10 0 000-20z" />
                                 </svg>
-                                <span class="leading-relaxed">Arahkan kursor (hover) pada kotak untuk melihat detail lengkap.</span>
-                            </li>
+                                <span class="leading-relaxed">Arahkan kursor (hover) pada kotak untuk melihat detail
+                                    lengkap.</span>
+                            </li> --}}
                             <li class="flex gap-3">
-                                <svg class="w-5 h-5 mt-0.5 flex-none text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                                <svg class="w-5 h-5 mt-0.5 flex-none text-gray-400" fill="none"
+                                    stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M5 13l4 4L19 7" />
                                 </svg>
-                                <span class="leading-relaxed">Sistem FIFO memastikan stok lama keluar terlebih dahulu.</span>
+                                <span class="leading-relaxed">Sistem FIFO memastikan stok lama keluar terlebih
+                                    dahulu.</span>
                             </li>
                         </ul>
                     </div>
@@ -257,18 +300,24 @@
 <style>
     /* Custom animations */
     @keyframes pulse-green {
-        0%, 100% {
+
+        0%,
+        100% {
             box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.7);
         }
+
         50% {
             box-shadow: 0 0 0 4px rgba(34, 197, 94, 0);
         }
     }
 
     @keyframes pulse-blue {
-        0%, 100% {
+
+        0%,
+        100% {
             box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.7);
         }
+
         50% {
             box-shadow: 0 0 0 4px rgba(59, 130, 246, 0);
         }
