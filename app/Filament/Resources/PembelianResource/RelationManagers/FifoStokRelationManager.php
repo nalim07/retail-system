@@ -10,6 +10,7 @@ use App\Models\PembelianDetail;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Filament\Resources\RelationManagers\RelationManager;
+use Filament\Tables\Actions\Action;
 
 class FifoStokRelationManager extends RelationManager
 {
@@ -82,6 +83,14 @@ class FifoStokRelationManager extends RelationManager
                             fn (Builder $query): Builder => $query->where('sisa', '=', 0),
                         );
                     }),
+            ])
+            ->headerActions([
+                Action::make('cetak_pdf')
+                    ->label('Cetak PDF')
+                    ->icon('heroicon-o-document-arrow-down')
+                    ->color('danger')
+                    ->url(fn () => route('fifo-visualization.preview'))
+                    ->openUrlInNewTab(),
             ])
             ->emptyStateHeading('Tidak Ada Data Stok FIFO')
             ->emptyStateDescription('Belum ada data pembelian untuk ditampilkan dalam sistem FIFO.')

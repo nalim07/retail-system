@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -203,6 +204,7 @@
         }
     </style>
 </head>
+
 <body>
     <div class="container">
         <div class="header">
@@ -227,7 +229,7 @@
             $totalBarang = $groupedRecords->count();
             $totalBatch = $records->count();
             $totalStok = $records->sum('sisa');
-            $totalNilai = $records->sum(function($record) {
+            $totalNilai = $records->sum(function ($record) {
                 return $record->sisa * $record->harga_beli;
             });
         @endphp
@@ -249,8 +251,8 @@
                 </thead>
                 <tbody>
                     @php $no = 1; @endphp
-                    @foreach($groupedRecords as $namaBarang => $barangRecords)
-                        @foreach($barangRecords as $index => $record)
+                    @foreach ($groupedRecords as $namaBarang => $barangRecords)
+                        @foreach ($barangRecords as $index => $record)
                             <tr class="{{ $index === 0 ? 'first-batch-row' : 'other-batch-row' }}">
                                 <td>{{ $no++ }}</td>
                                 <td class="text-left">{{ $namaBarang }}</td>
@@ -261,7 +263,7 @@
                                 <td>Rp {{ number_format($record->harga_beli, 0, ',', '.') }}</td>
                                 {{-- <td>Rp {{ number_format($record->sisa * $record->harga_beli, 0, ',', '.') }}</td> --}}
                                 <td class="status-cell">
-                                    @if($index === 0)
+                                    @if ($index === 0)
                                         <span class="status-priority">Prioritas Keluar</span>
                                     @else
                                         <span class="status-waiting">Menunggu</span>
@@ -275,7 +277,7 @@
         </div>
 
         <!-- Summary per Barang -->
-        @foreach($groupedRecords as $namaBarang => $barangRecords)
+        @foreach ($groupedRecords as $namaBarang => $barangRecords)
             <div class="summary-section">
                 <div class="summary-title">Ringkasan {{ $namaBarang }}</div>
                 <div class="summary-grid">
@@ -285,15 +287,19 @@
                     </div>
                     <div class="summary-item">
                         <div class="summary-label">Total Stok</div>
-                        <div class="summary-value">{{ number_format($barangRecords->sum('sisa'), 0, ',', '.') }} {{ $barangRecords->first()->barang->satuan ?? 'pcs' }}</div>
+                        <div class="summary-value">{{ number_format($barangRecords->sum('sisa'), 0, ',', '.') }}
+                            {{ $barangRecords->first()->barang->satuan ?? 'pcs' }}</div>
                     </div>
                     <div class="summary-item">
                         <div class="summary-label">Total Nilai</div>
-                        <div class="summary-value">Rp {{ number_format($barangRecords->sum(function($r) { return $r->sisa * $r->harga_beli; }), 0, ',', '.') }}</div>
+                        <div class="summary-value">Rp
+                            {{ number_format($barangRecords->sum(function ($r) {return $r->sisa * $r->harga_beli;}),0,',','.') }}
+                        </div>
                     </div>
                     <div class="summary-item">
                         <div class="summary-label">Rata-rata Harga</div>
-                        <div class="summary-value">Rp {{ number_format($barangRecords->avg('harga_beli'), 0, ',', '.') }}</div>
+                        <div class="summary-value">Rp
+                            {{ number_format($barangRecords->avg('harga_beli'), 0, ',', '.') }}</div>
                     </div>
                 </div>
             </div>
@@ -327,4 +333,5 @@
         </div>
     </div>
 </body>
+
 </html>

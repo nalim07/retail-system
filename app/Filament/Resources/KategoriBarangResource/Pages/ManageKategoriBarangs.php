@@ -16,7 +16,7 @@ class ManageKategoriBarangs extends ManageRecords
             Actions\CreateAction::make()
                 ->label('Tambah')
                 ->modalWidth('md')
-                ->modalSubmitActionLabel('Tambah')
+                ->modalSubmitActionLabel('Simpan')
                 ->modalHeading('Tambah Kategori Barang')
                 ->disableCreateAnother(),
         ];
