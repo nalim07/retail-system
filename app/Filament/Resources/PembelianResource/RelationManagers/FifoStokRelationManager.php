@@ -86,7 +86,7 @@ class FifoStokRelationManager extends RelationManager
             ])
             ->headerActions([
                 Action::make('cetak_pdf')
-                    ->label('Cetak PDF')
+                    ->label('Cetak')
                     ->icon('heroicon-o-document-arrow-down')
                     ->color('danger')
                     ->url(fn () => route('fifo-visualization.preview'))
